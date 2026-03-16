@@ -68,17 +68,15 @@ umount /mnt
 ### 6. Mount btrfs subvolumes
 
 ```bash
-mkdir -p /mnt/mnt/data /mnt/data/less /mnt/home/newlix
-# top-level for btrbk (not user-facing)
-mount -o subvol=/,noatime /dev/nvme0n1 /mnt/mnt/data
-mount -o subvol=@less,noatime /dev/nvme0n1 /mnt/data/less
+mkdir -p /mnt/data /mnt/home/newlix
+mount -o noatime /dev/nvme0n1 /mnt/data
 mount -o subvol=@newlix,noatime /dev/nvme0n1 /mnt/home/newlix
 ```
 
 ### 7. Restore from backup
 
 ```bash
-rsync -aHAX /backup/replicas/data/less/    /mnt/data/less/
+rsync -aHAX /backup/replicas/data/less/    /mnt/data/@less/
 rsync -aHAX /backup/replicas/data/newlix/  /mnt/home/newlix/
 ```
 
@@ -138,9 +136,8 @@ btrfs subvolume create /tmp/btrfs/@newlix
 btrfs subvolume create /tmp/btrfs/@snapshots
 umount /tmp/btrfs
 
-mkdir -p /mnt/data/less /mnt/home/newlix
-mount -o subvol=/,noatime /dev/nvme0n1 /mnt/mnt/data
-mount -o subvol=@less,noatime /dev/nvme0n1 /mnt/data/less
+mkdir -p /mnt/data /mnt/home/newlix
+mount -o noatime /dev/nvme0n1 /mnt/data
 mount -o subvol=@newlix,noatime /dev/nvme0n1 /mnt/home/newlix
 ```
 
