@@ -1,6 +1,6 @@
 # Generated from hardware scan of lab (Debian → NixOS migration)
 # CPU: AMD Ryzen 7 7700 | GPU: NVIDIA RTX 5070 Ti (GB203/Blackwell) + AMD Raphael iGPU
-# Disks: sda=465G (boot/root/swap), sdb=1.8T (/115), btrfs (2x NVMe 2TB, data=single metadata=raid1)
+# Disks: sdb=465G (boot/root/swap), sda=1.8T (/115), btrfs (2x NVMe 2TB, data=single metadata=raid1)
 { config, lib, pkgs, modulesPath, ... }:
 
 {
