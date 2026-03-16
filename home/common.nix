@@ -31,7 +31,8 @@
     historyControl  = [ "ignoreboth" "erasedups" ];
 
     sessionVariables = {
-      EDITOR   = if pkgs.stdenv.isDarwin then "subl -w" else "vi";
+      EDITOR   = "vi";
+      VISUAL   = if pkgs.stdenv.isDarwin then "subl -w" else "vi";
       MANPAGER = "less -X";
       GOPATH   = "$HOME/go";
       LANG     = "en_US.UTF-8";
