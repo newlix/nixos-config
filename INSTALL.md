@@ -59,6 +59,7 @@ echo "Backup btrfs UUID: $BACKUP_UUID"
 ```bash
 mount /dev/nvme0n1 /mnt
 btrfs subvolume create /mnt/@less
+btrfs subvolume create /mnt/@more
 btrfs subvolume create /mnt/@newlix
 # btrbk snapshot_dir
 btrfs subvolume create /mnt/@snapshots
