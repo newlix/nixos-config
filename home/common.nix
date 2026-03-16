@@ -31,7 +31,7 @@
     historyControl  = [ "ignoreboth" "erasedups" ];
 
     sessionVariables = {
-      EDITOR   = "vi";
+      EDITOR   = if pkgs.stdenv.isDarwin then "subl -w" else "vi";
       MANPAGER = "less -X";
       GOPATH   = "$HOME/go";
       LANG     = "en_US.UTF-8";
@@ -40,14 +40,19 @@
     };
 
     shellAliases = {
-      ll   = "ls -lah";
       grep = "grep --color=auto";
       df   = "df -h";
 
       yt-dlp-audio = "yt-dlp -f 'bestaudio' -x --audio-format opus";
       yt-dlp-video = "yt-dlp -S ext:mp4:m4a";
       cl = "claude --dangerously-skip-permissions";
-    };
+    } // (if pkgs.stdenv.isDarwin then {
+      ls = "ls -G";
+      ll = "ls -lahG";
+    } else {
+      ls = "ls --color=auto";
+      ll = "ls -lah --color=auto";
+    });
 
     initExtra = ''
       shopt -s checkwinsize globstar histappend
@@ -59,7 +64,12 @@
       parse_git_branch() {
         git branch 2>/dev/null | sed -n 's/^\* \(.*\)/ (\1)/p'
       }
-      PS1='\[\e[1;34m\]\w\[\e[1;33m\]$(parse_git_branch) \[\e[1;31m\]>\[\e[1;33m\]>\[\e[1;32m\]>\[\e[0m\] '
+      red='\[\e[1;31m\]'
+      green='\[\e[1;32m\]'
+      yellow='\[\e[1;33m\]'
+      blue='\[\e[1;34m\]'
+      reset='\[\e[0m\]'
+      PS1="$blue\w$yellow\$(parse_git_branch) $red>$yellow>$green>$reset "
 
       # fzf keybindings (Ctrl+R history, Ctrl+T files)
       eval "$(fzf --bash)"
@@ -77,6 +87,11 @@
 
       # PATH extras
       export PATH="$HOME/core/sh:$HOME/bin:$GOPATH/bin:$PATH"
+
+      # macOS: Sublime Text CLI
+      if [[ -d "/Applications/Sublime Text.app" ]]; then
+        export PATH="/Applications/Sublime Text.app/Contents/SharedSupport/bin:$PATH"
+      fi
 
       # tmux session switcher
       tm() {
