@@ -65,7 +65,7 @@
   fileSystems."/backup" = {
     device = "/dev/disk/by-uuid/BACKUP-UUID-HERE";
     fsType = "btrfs";
-    options = [ "noatime" ];
+    options = [ "noatime" "compress=zstd" ];
   };
 
   # ── CPU ────────────────────────────────────────────────────────────────────
