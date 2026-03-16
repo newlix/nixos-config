@@ -276,6 +276,10 @@
     };
   };
 
+  # Spin down backup HDD after btrbk finishes to reduce noise
+  systemd.services."btrbk-backup".serviceConfig.ExecStartPost =
+    "${pkgs.hdparm}/bin/hdparm -y /dev/sdc";
+
   # ── SSH ────────────────────────────────────────────────────────────────────
   services.openssh = {
     enable = true;
