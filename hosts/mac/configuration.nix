@@ -6,6 +6,15 @@
   # Determinate Nix manages the daemon; let it handle nix.conf
   nix.enable = false;
 
+  # ── Nix GC (weekly, keep 14 days) ──────────────────────────────────────────
+  launchd.daemons.nix-gc = {
+    command = "/nix/var/nix/profiles/default/bin/nix-collect-garbage --delete-older-than 14d";
+    serviceConfig = {
+      RunAtLoad = false;
+      StartCalendarInterval = [{ Weekday = 0; Hour = 3; Minute = 0; }];
+    };
+  };
+
   # Allow unfree packages (e.g. some fonts, tools)
   nixpkgs.config.allowUnfree = true;
 
