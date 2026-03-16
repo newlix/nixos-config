@@ -34,6 +34,9 @@
       EDITOR   = "vi";
       MANPAGER = "less -X";
       GOPATH   = "$HOME/go";
+      LANG     = "en_US.UTF-8";
+      LC_ALL   = "en_US.UTF-8";
+      HISTTIMEFORMAT = "%F %T  ";
     };
 
     shellAliases = {
@@ -47,10 +50,19 @@
     };
 
     initExtra = ''
-      shopt -s checkwinsize
+      shopt -s checkwinsize globstar histappend
       bind 'set completion-ignore-case on'
       bind 'set show-all-if-ambiguous on'
       bind 'TAB:menu-complete'
+
+      # Git branch in prompt
+      parse_git_branch() {
+        git branch 2>/dev/null | sed -n 's/^\* \(.*\)/ (\1)/p'
+      }
+      PS1='\[\e[1;34m\]\w\[\e[1;33m\]$(parse_git_branch) \[\e[1;31m\]>\[\e[1;33m\]>\[\e[1;32m\]>\[\e[0m\] '
+
+      # fzf keybindings (Ctrl+R history, Ctrl+T files)
+      eval "$(fzf --bash)"
 
       # PATH extras
       export PATH="$HOME/core/sh:$HOME/bin:$GOPATH/bin:$PATH"

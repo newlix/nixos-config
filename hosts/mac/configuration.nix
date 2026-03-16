@@ -25,6 +25,14 @@
     gnumake
     python3
 
+    bash-completion
+    docker-client
+    eternal-terminal
+    mas
+    s3cmd
+    swiftformat
+    zola
+
     # Nix tooling
     nixd
     alejandra
@@ -45,6 +53,44 @@
       InitialKeyRepeat = 15;
       KeyRepeat = 2;
     };
+  };
+
+  # ── Homebrew ────────────────────────────────────────────────────────────────
+  homebrew = {
+    enable = true;
+    onActivation = {
+      autoUpdate = true;
+      upgrade = true;
+      cleanup = "uninstall";  # remove formulae/casks not listed here
+    };
+
+    masApps = {
+      LINE = 539883307;
+      "The Unarchiver" = 425424353;
+      Xcode = 497799835;
+    };
+
+    casks = [
+      "android-studio"
+      "antigravity"
+      "appcleaner"
+      "arq"
+      "balenaetcher"
+      "flashspace"
+      "google-chrome"
+      "iina"
+      "kobo"
+      "istat-menus"
+      "openemu"
+      "postico"
+      "sublime-text"
+      "telegram"
+      "transmit"
+      "utm"
+      "vnc-viewer"
+      "zed"
+      "zen"
+    ];
   };
 
   # ── Users ──────────────────────────────────────────────────────────────────
