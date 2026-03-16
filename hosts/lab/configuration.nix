@@ -205,6 +205,9 @@
         "fruit:delete_empty_adfiles"             = "yes";
         "map to guest"                           = "bad user";
         "usershare allow guests"                 = "no";
+        # Disable SMB1 — macOS uses SMB2/3, SMB1 is a security risk
+        "server min protocol"                    = "SMB2";
+        "server signing"                         = "auto";
       };
       data = {
         path = "/data";
@@ -213,6 +216,9 @@
         "create mask" = "0700";
         "directory mask" = "0700";
         "valid users" = "newlix";
+        "ea support" = "yes";
+        "veto files" = "/.DS_Store/.Spotlight-V100/.Trashes/.fseventsd/";
+        "delete veto files" = "yes";
       };
       newlix = {
         path = "/home/newlix";
@@ -221,6 +227,9 @@
         "create mask" = "0700";
         "directory mask" = "0700";
         "valid users" = "newlix";
+        "ea support" = "yes";
+        "veto files" = "/.DS_Store/.Spotlight-V100/.Trashes/.fseventsd/";
+        "delete veto files" = "yes";
       };
       "115" = {
         path = "/115";
@@ -229,6 +238,9 @@
         "create mask" = "0700";
         "directory mask" = "0700";
         "valid users" = "newlix";
+        "ea support" = "yes";
+        "veto files" = "/.DS_Store/.Spotlight-V100/.Trashes/.fseventsd/";
+        "delete veto files" = "yes";
       };
     };
   };
