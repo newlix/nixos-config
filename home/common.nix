@@ -1,0 +1,110 @@
+{ config, pkgs, lib, inputs, ... }:
+
+{
+  programs.home-manager.enable = true;
+
+  # ── Git ────────────────────────────────────────────────────────────────────
+  programs.git = {
+    enable = true;
+    settings = {
+      user = {
+        name  = "newlix";
+        email = "newlix134@gmail.com";
+      };
+      init.defaultBranch = "main";
+      credential."https://github.com".helper    = "!gh auth git-credential";
+      credential."https://gist.github.com".helper = "!gh auth git-credential";
+      filter.lfs = {
+        process  = "git-lfs filter-process";
+        required = true;
+        clean    = "git-lfs clean -- %f";
+        smudge   = "git-lfs smudge -- %f";
+      };
+    };
+  };
+
+  # ── Bash ───────────────────────────────────────────────────────────────────
+  programs.bash = {
+    enable = true;
+    historySize     = 100000;
+    historyFileSize = 200000;
+    historyControl  = [ "ignoreboth" "erasedups" ];
+
+    sessionVariables = {
+      EDITOR   = "vi";
+      MANPAGER = "less -X";
+      GOPATH   = "$HOME/go";
+    };
+
+    shellAliases = {
+      ll   = "ls -lah";
+      grep = "grep --color=auto";
+      df   = "df -h";
+
+      yt-dlp-audio = "yt-dlp -f 'bestaudio' -x --audio-format opus";
+      yt-dlp-video = "yt-dlp -S ext:mp4:m4a";
+      cl = "claude --dangerously-skip-permissions";
+    };
+
+    initExtra = ''
+      shopt -s checkwinsize
+      bind 'set completion-ignore-case on'
+      bind 'set show-all-if-ambiguous on'
+      bind 'TAB:menu-complete'
+
+      # PATH extras
+      export PATH="$HOME/core/sh:$HOME/bin:$GOPATH/bin:$PATH"
+
+      # tmux session switcher
+      tm() {
+        local session
+        session=$(tmux ls -F "#{session_name}" | fzf --exit-0) \
+          && tmux attach -t "$session" \
+          || tmux new-session
+      }
+    '';
+  };
+
+  # ── direnv ─────────────────────────────────────────────────────────────────
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+  };
+
+  # ── tmux ───────────────────────────────────────────────────────────────────
+  programs.tmux = {
+    enable = true;
+    terminal = "tmux-256color";
+    historyLimit = 50000;
+    escapeTime = 0;
+    keyMode = "vi";
+    mouse = true;
+  };
+
+  # ── User packages ──────────────────────────────────────────────────────────
+  home.packages = with pkgs; [
+    gh
+    claude-code
+    git-lfs
+    fzf
+
+    # Go
+    gopls
+    golangci-lint
+
+    # Python
+    uv
+
+    # Node.js
+    nodejs
+
+    # Backup
+    restic
+    rclone
+
+    yt-dlp
+    jq
+    btop
+    ncdu
+  ];
+}
