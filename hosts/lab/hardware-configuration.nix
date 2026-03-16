@@ -50,13 +50,13 @@
   fileSystems."/data" = {
     device = "/dev/disk/by-uuid/BTRFS-UUID-HERE";
     fsType = "btrfs";
-    options = [ "noatime" ];
+    options = [ "noatime" "compress=zstd" "discard=async" ];
   };
 
   fileSystems."/home/newlix" = {
     device = "/dev/disk/by-uuid/BTRFS-UUID-HERE";
     fsType = "btrfs";
-    options = [ "subvol=@newlix" "noatime" "compress=zstd" ];
+    options = [ "subvol=@newlix" "noatime" "compress=zstd" "discard=async" ];
   };
 
   # ── Backup disk ────────────────────────────────────────────────────────────
