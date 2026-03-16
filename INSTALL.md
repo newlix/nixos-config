@@ -1,111 +1,102 @@
-# NixOS Installation Guide — lab
+# NixOS Reinstall Guide — lab
 
-## Partition layout (reference)
+重新安裝 NixOS，資料磁碟（btrfs NVMe、sda、sdc）不動，只重灌系統碟 sdb。
 
-| Device | UUID | Mount | FS |
-|--------|------|-------|----|
-| sda | `a6c40e89-ee46-45e7-9d53-0b08d7c808e4` | `/115` | xfs |
-| sdb1 | `13B1-77D0` | `/boot` | vfat |
-| sdb2 | `176fb7ff-d955-48c1-991e-d1c1c9535f0d` | `/` | xfs |
-| sdb3 | `9b6b038a-ff12-46b2-8447-4f793b4a2c53` | swap | — |
-| nvme0n1 + nvme1n1 | btrfs UUID (see hardware-configuration.nix) | `/data` (@less, @more, @newlix, @snapshots), `/home/newlix` | btrfs |
-| sdc | btrfs UUID (see hardware-configuration.nix) | `/backup` | btrfs |
+## Partition layout
+
+| Device | Mount | FS | 說明 |
+|--------|-------|----|------|
+| sdb1 | `/boot` | vfat | EFI |
+| sdb2 | `/` | xfs | 系統根目錄 |
+| sdb3 | swap | — | |
+| sda | `/115` | xfs | 資料碟 |
+| nvme0n1 + nvme1n1 | `/data`, `/home/newlix` | btrfs | 資料（不重建） |
+| sdc | `/backup` | btrfs | 備份碟（不重建） |
 
 ---
 
-## Fresh install (from NixOS installer)
+## Step 1 — Boot NixOS installer
 
-### Step 1 — Boot NixOS installer
+Download minimal ISO from https://nixos.org/download, boot from USB.
 
-Download the minimal ISO from https://nixos.org/download and boot from USB.
-
-### Step 2 — Mount partitions
+## Step 2 — Format system disk (sdb only)
 
 ```bash
-mount /dev/disk/by-uuid/176fb7ff-d955-48c1-991e-d1c1c9535f0d /mnt
+# 如果需要重建分割表：
+# parted /dev/sdb -- mklabel gpt
+# parted /dev/sdb -- mkpart ESP fat32 1MiB 512MiB
+# parted /dev/sdb -- set 1 esp on
+# parted /dev/sdb -- mkpart primary 512MiB -8GiB
+# parted /dev/sdb -- mkpart primary linux-swap -8GiB 100%
 
+# 格式化（只動 sdb，其他磁碟不要碰）
+mkfs.fat -F 32 /dev/sdb1
+mkfs.xfs -f /dev/sdb2
+mkswap /dev/sdb3
+```
+
+## Step 3 — Mount all partitions
+
+```bash
+mount /dev/sdb2 /mnt
 mkdir -p /mnt/boot
-mount /dev/disk/by-uuid/13B1-77D0 /mnt/boot
+mount /dev/sdb1 /mnt/boot
+swapon /dev/sdb3
 
+# 資料碟（已存在，直接掛載）
 mkdir -p /mnt/115
 mount /dev/disk/by-uuid/a6c40e89-ee46-45e7-9d53-0b08d7c808e4 /mnt/115
 
-swapon /dev/disk/by-uuid/9b6b038a-ff12-46b2-8447-4f793b4a2c53
+mkdir -p /mnt/data
+mount -o noatime,compress=zstd,discard=async /dev/nvme0n1 /mnt/data
+
+mkdir -p /mnt/home/newlix
+mount -o subvol=@newlix,noatime,compress=zstd,discard=async /dev/nvme0n1 /mnt/home/newlix
 ```
 
-### Step 3 — Create btrfs and subvolumes
-
-```bash
-mkfs.btrfs -d single -m raid1 /dev/nvme0n1 /dev/nvme1n1
-UUID=$(blkid -s UUID -o value /dev/nvme0n1)
-
-mkfs.btrfs /dev/sdc
-BACKUP_UUID=$(blkid -s UUID -o value /dev/sdc)
-
-mount /dev/nvme0n1 /tmp/btrfs
-btrfs subvolume create /tmp/btrfs/@less
-btrfs subvolume create /tmp/btrfs/@more
-btrfs subvolume create /tmp/btrfs/@newlix
-btrfs subvolume create /tmp/btrfs/@snapshots
-umount /tmp/btrfs
-
-mkdir -p /mnt/data /mnt/home/newlix /mnt/backup
-mount -o noatime /dev/nvme0n1 /mnt/data
-mount -o subvol=@newlix,noatime /dev/nvme0n1 /mnt/home/newlix
-mount -o noatime /dev/sdc /mnt/backup
-```
-
-### Step 4 — Fix initrd kernel modules
-
-```bash
-nixos-generate-config --root /mnt
-cat /mnt/etc/nixos/hardware-configuration.nix
-# Copy boot.initrd.availableKernelModules, boot.initrd.kernelModules,
-# boot.kernelModules into hosts/lab/hardware-configuration.nix
-```
-
-### Step 5 — Clone config and fill UUID
+## Step 4 — Clone config
 
 ```bash
 mkdir -p /mnt/etc/nixos
 cd /mnt/etc/nixos
 nix-shell -p git --run "git clone https://github.com/newlix/nixos-config ."
-
-sed -i "s/BTRFS-UUID-HERE/$UUID/g" hosts/lab/hardware-configuration.nix
-sed -i "s/BACKUP-UUID-HERE/$BACKUP_UUID/g" hosts/lab/hardware-configuration.nix
 ```
 
-### Step 6 — Install
+## Step 5 — Update UUIDs (if sdb was reformatted)
+
+```bash
+# 確認新 UUID
+blkid /dev/sdb1 /dev/sdb2 /dev/sdb3
+
+# 更新 hardware-configuration.nix 中 /、/boot、swap 的 UUID
+vim hosts/lab/hardware-configuration.nix
+```
+
+btrfs UUID（nvme、sdc）不需要改，除非你重建了這些磁碟。
+
+## Step 6 — Install
 
 ```bash
 nixos-install --flake /mnt/etc/nixos#lab
 reboot
 ```
 
-### Step 7 — First boot checklist
+## Step 7 — First boot checklist
 
-**Verify btrfs:**
 ```bash
+# 驗證 btrfs
 btrfs filesystem show
 btrfs subvolume list /data
-```
 
-**Verify NVIDIA driver:**
-```bash
+# 驗證 NVIDIA
 nvidia-smi
-```
 
-**Set Samba password:**
-```bash
+# 設定 Samba 密碼
 sudo smbpasswd -a newlix
-```
 
-**Set up SSH key:**
-```bash
+# 設定 SSH key
 ssh-keygen -t ed25519
-```
 
-**Rebuild after any config change:**
-```bash
-sudo nixos-rebuild switch --flake /etc/nixos#lab
+# 驗證 Eternal Terminal
+systemctl status eternal-terminal
 ```
