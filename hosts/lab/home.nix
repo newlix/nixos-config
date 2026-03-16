@@ -205,6 +205,7 @@
     uv             # Python package & project manager
 
     # Node.js
+    nodejs
     fnm            # Node.js version manager (binaries work via nix-ld)
 
     # Noctalia required
