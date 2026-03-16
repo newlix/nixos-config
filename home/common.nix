@@ -69,7 +69,7 @@
         if [ -d /etc/nixos ]; then
           sudo nixos-rebuild switch --flake /etc/nixos
         elif [ -d "$HOME/nixos-config" ]; then
-          darwin-rebuild switch --flake "$HOME/nixos-config"
+          sudo darwin-rebuild switch --flake "$HOME/nixos-config"
         else
           echo "No nixos config found"
         fi
