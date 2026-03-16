@@ -13,98 +13,6 @@
 
 ---
 
-## Migrating ZFS → btrfs (one-time, from CachyOS live USB)
-
-### 1. Install tools
-
-```bash
-pacman -Sy zfs-utils btrfs-progs rsync
-```
-
-### 2. Import backup pool (read-only)
-
-```bash
-zpool import -o readonly=on backup
-mkdir -p /backup/replicas/data
-zfs mount backup/replicas/data/less
-zfs mount backup/replicas/data/newlix
-```
-
-### 3. Destroy ZFS data pool
-
-```bash
-zpool destroy data
-```
-
-### 4. Create btrfs on NVMe
-
-```bash
-mkfs.btrfs -d single -m raid1 /dev/nvme0n1 /dev/nvme1n1
-UUID=$(blkid -s UUID -o value /dev/nvme0n1)
-echo "NVMe btrfs UUID: $UUID"
-```
-
-### 5. Create subvolumes
-
-```bash
-mount /dev/nvme0n1 /mnt
-btrfs subvolume create /mnt/@less
-btrfs subvolume create /mnt/@more
-btrfs subvolume create /mnt/@newlix
-# btrbk snapshot_dir
-btrfs subvolume create /mnt/@snapshots
-umount /mnt
-```
-
-### 6. Mount btrfs subvolumes
-
-```bash
-mkdir -p /mnt/data /mnt/home/newlix
-mount -o noatime /dev/nvme0n1 /mnt/data
-mount -o subvol=@newlix,noatime /dev/nvme0n1 /mnt/home/newlix
-```
-
-### 7. Restore from backup
-
-```bash
-rsync -aHAX /backup/replicas/data/less/    /mnt/data/@less/
-rsync -aHAX /backup/replicas/data/newlix/  /mnt/home/newlix/
-```
-
-### 8. Wipe sdc and create btrfs backup disk
-
-```bash
-zpool export backup
-wipefs -a /dev/sdc
-mkfs.btrfs /dev/sdc
-BACKUP_UUID=$(blkid -s UUID -o value /dev/sdc)
-echo "Backup btrfs UUID: $BACKUP_UUID"
-```
-
-### 9. Fill UUIDs into NixOS config
-
-```bash
-mkdir -p /mnt/sysroot
-mount /dev/disk/by-uuid/176fb7ff-d955-48c1-991e-d1c1c9535f0d /mnt/sysroot
-mount /dev/disk/by-uuid/13B1-77D0 /mnt/sysroot/boot
-
-cd /mnt/sysroot/etc/nixos && git pull
-
-sed -i "s/BTRFS-UUID-HERE/$UUID/g" hosts/lab/hardware-configuration.nix
-sed -i "s/BACKUP-UUID-HERE/$BACKUP_UUID/g" hosts/lab/hardware-configuration.nix
-```
-
-### 10. Rebuild NixOS
-
-```bash
-nixos-enter --root /mnt/sysroot
-nixos-rebuild switch --flake /etc/nixos#lab
-exit
-reboot
-```
-
----
-
 ## Fresh install (from NixOS installer)
 
 ### Step 1 — Boot NixOS installer
@@ -199,5 +107,5 @@ ssh-keygen -t ed25519
 
 **Rebuild after any config change:**
 ```bash
-nh os switch /etc/nixos
+sudo nixos-rebuild switch --flake /etc/nixos#lab
 ```

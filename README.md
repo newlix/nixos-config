@@ -1,6 +1,6 @@
 # nixos-config
 
-NixOS configuration for **lab** (AMD Ryzen 7 7700 + NVIDIA RTX 5070 Ti).
+Minimal server configuration for **lab** (AMD Ryzen 7 7700 + NVIDIA RTX 5070 Ti).
 
 ## Storage layout
 
@@ -35,8 +35,7 @@ Daily `btrfs send/receive` from NVMe to sdc.
 ### System rebuild
 
 ```bash
-nh os switch /etc/nixos        # apply system + home-manager changes
-nh os build /etc/nixos         # preview without applying
+sudo nixos-rebuild switch --flake /etc/nixos#lab
 ```
 
 ### Nix
