@@ -75,14 +75,31 @@
       # fzf keybindings (Ctrl+R history, Ctrl+T files)
       eval "$(fzf --bash)"
 
-      # nrs: rebuild NixOS or nix-darwin depending on OS
-      nrs() {
+      # Resolve flake directory based on OS
+      _nix_flake_dir() {
         if [ -d /etc/nixos ]; then
-          sudo nixos-rebuild switch --flake /etc/nixos
+          echo /etc/nixos
         elif [ -d "$HOME/nixos-config" ]; then
-          sudo darwin-rebuild switch --flake "$HOME/nixos-config"
+          echo "$HOME/nixos-config"
         else
-          echo "No nixos config found"
+          echo "No nixos config found" >&2
+          return 1
+        fi
+      }
+
+      # nrs (nix rebuild switch): rebuild NixOS or nix-darwin
+      #   nrs        → rebuild
+      #   nrs -u     → update flake.lock then rebuild
+      nrs() {
+        local flake
+        flake=$(_nix_flake_dir) || return 1
+        if [ "$1" = "-u" ]; then
+          nix flake update --flake "$flake" || return 1
+        fi
+        if [ -d /etc/nixos ]; then
+          sudo nixos-rebuild switch --flake "$flake"
+        else
+          sudo darwin-rebuild switch --flake "$flake"
         fi
       }
 

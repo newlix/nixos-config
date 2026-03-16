@@ -11,13 +11,10 @@
 
   # ── Mac-only system packages ───────────────────────────────────────────────
   environment.systemPackages = with pkgs; [
-    bash-completion
     docker-client
     eternal-terminal
     mas
-    s3cmd
     swiftformat
-    zola
   ];
 
   # ── macOS defaults ─────────────────────────────────────────────────────────

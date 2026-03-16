@@ -19,6 +19,10 @@
     gnumake
     python3
 
+    bash-completion
+    s3cmd
+    zola
+
     # Nix tooling
     nixd           # LSP for Nix
     alejandra      # Nix formatter
