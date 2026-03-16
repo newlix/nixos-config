@@ -276,9 +276,11 @@
     };
   };
 
-  # Spin down backup HDD after btrbk finishes to reduce noise
-  systemd.services."btrbk-backup".serviceConfig.ExecStartPost =
-    "${pkgs.hdparm}/bin/hdparm -y /dev/sdc";
+  # Mount backup disk only during btrbk, unmount after to keep HDD spun down
+  systemd.services."btrbk-backup".serviceConfig = {
+    ExecStartPre = "${pkgs.util-linux}/bin/mount /backup";
+    ExecStartPost = "${pkgs.util-linux}/bin/umount /backup";
+  };
 
   # ── SSH ────────────────────────────────────────────────────────────────────
   services.openssh = {
