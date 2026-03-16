@@ -65,7 +65,7 @@
   };
 
   # btrbk needs top-level access to create snapshots as sibling subvolumes
-  fileSystems."/mnt/btrfs" = {
+  fileSystems."/mnt/data" = {
     device = "/dev/disk/by-uuid/BTRFS-UUID-HERE";
     fsType = "btrfs";
     options = [ "subvol=/" "noatime" ];
