@@ -209,7 +209,7 @@
         "server signing"                         = "auto";
       };
       data = {
-        path = "/data/@less";
+        path = "/data";
         browseable = "yes";
         "read only" = "no";
         "create mask" = "0700";
