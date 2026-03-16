@@ -192,6 +192,7 @@
   home.packages = with pkgs; [
     wofi
     gh       # GitHub CLI (used by git credential helper)
+    claude-code
     git-lfs
     fzf
     vscode
