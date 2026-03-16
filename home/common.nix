@@ -64,6 +64,17 @@
       # fzf keybindings (Ctrl+R history, Ctrl+T files)
       eval "$(fzf --bash)"
 
+      # nrs: rebuild NixOS or nix-darwin depending on OS
+      nrs() {
+        if [ -d /etc/nixos ]; then
+          sudo nixos-rebuild switch --flake /etc/nixos
+        elif [ -d "$HOME/nixos-config" ]; then
+          darwin-rebuild switch --flake "$HOME/nixos-config"
+        else
+          echo "No nixos config found"
+        fi
+      }
+
       # PATH extras
       export PATH="$HOME/core/sh:$HOME/bin:$GOPATH/bin:$PATH"
 
