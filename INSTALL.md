@@ -9,7 +9,7 @@
 | sdb2 | `176fb7ff-d955-48c1-991e-d1c1c9535f0d` | `/` | xfs |
 | sdb3 | `9b6b038a-ff12-46b2-8447-4f793b4a2c53` | swap | — |
 | nvme0n1 + nvme1n1 | btrfs UUID (see hardware-configuration.nix) | `/data`, `/data/less`, `/home/newlix` | btrfs |
-| sdc | — | backup pool | ZFS pool `backup` |
+| sdc | btrfs UUID (see hardware-configuration.nix) | `/backup` | btrfs |
 
 ---
 
@@ -30,20 +30,28 @@ zfs mount backup/replicas/data/less
 zfs mount backup/replicas/data/newlix
 ```
 
-### 3. Destroy old ZFS pool
+### 3. Destroy old ZFS pool and backup pool
 
 ```bash
 zpool destroy data
+
+# After restoring data (step 7), wipe sdc for btrfs:
+zpool export backup
+wipefs -a /dev/sdc
 ```
 
-### 4. Create btrfs filesystem
+### 4. Create btrfs filesystems
 
 ```bash
-# data=single spans both drives (~3.6T usable), metadata=raid1 for safety
+# NVMe pool: data=single spans both drives (~3.6T usable), metadata=raid1 for safety
 mkfs.btrfs -d single -m raid1 /dev/nvme0n1 /dev/nvme1n1
-
 UUID=$(blkid -s UUID -o value /dev/nvme0n1)
-echo "btrfs UUID: $UUID"
+echo "NVMe btrfs UUID: $UUID"
+
+# Backup disk
+mkfs.btrfs /dev/sdc
+BACKUP_UUID=$(blkid -s UUID -o value /dev/sdc)
+echo "Backup btrfs UUID: $BACKUP_UUID"
 ```
 
 ### 5. Create subvolumes
@@ -53,6 +61,8 @@ mount /dev/nvme0n1 /mnt
 btrfs subvolume create /mnt/@data
 btrfs subvolume create /mnt/@data_less
 btrfs subvolume create /mnt/@home_newlix
+# btrbk will use @snapshots as snapshot_dir
+btrfs subvolume create /mnt/@snapshots
 umount /mnt
 ```
 
@@ -72,7 +82,7 @@ rsync -aHAX /backup/replicas/data/less/    /mnt/data/less/
 rsync -aHAX /backup/replicas/data/newlix/  /mnt/home/newlix/
 ```
 
-### 8. Fill UUID into NixOS config
+### 8. Fill UUIDs into NixOS config
 
 ```bash
 # Mount system root
@@ -80,6 +90,8 @@ mount /dev/disk/by-uuid/176fb7ff-d955-48c1-991e-d1c1c9535f0d /mnt/sysroot
 mount /dev/disk/by-uuid/13B1-77D0 /mnt/sysroot/boot
 
 sed -i "s/BTRFS-UUID-HERE/$UUID/g" \
+  /mnt/sysroot/etc/nixos/hosts/lab/hardware-configuration.nix
+sed -i "s/BACKUP-UUID-HERE/$BACKUP_UUID/g" \
   /mnt/sysroot/etc/nixos/hosts/lab/hardware-configuration.nix
 ```
 

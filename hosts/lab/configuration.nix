@@ -255,6 +255,27 @@
     };
   };
 
+  # ── btrbk ──────────────────────────────────────────────────────────────────
+  # Daily snapshots + send/receive backup to /backup (sdc)
+  services.btrbk.instances."backup" = {
+    onCalendar = "daily";
+    settings = {
+      snapshot_preserve_min = "2d";
+      snapshot_preserve     = "7d 4w";
+      target_preserve_min   = "no";
+      target_preserve       = "30d 10w 6m";
+
+      volume."/mnt/btrfs" = {
+        snapshot_dir = "@snapshots";
+        subvolume = {
+          "@data".target      = "/backup/data";
+          "@data_less".target = "/backup/data_less";
+          "@home_newlix".target = "/backup/home_newlix";
+        };
+      };
+    };
+  };
+
   # ── SSH ────────────────────────────────────────────────────────────────────
   services.openssh = {
     enable = true;

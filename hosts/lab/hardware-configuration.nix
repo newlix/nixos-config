@@ -64,6 +64,22 @@
     options = [ "subvol=@home_newlix" "noatime" "compress=zstd" ];
   };
 
+  # btrbk needs top-level access to create snapshots as sibling subvolumes
+  fileSystems."/mnt/btrfs" = {
+    device = "/dev/disk/by-uuid/BTRFS-UUID-HERE";
+    fsType = "btrfs";
+    options = [ "subvol=/" "noatime" ];
+  };
+
+  # ── Backup disk ────────────────────────────────────────────────────────────
+  # sdc: WDC WD6004FRYZ 5.5T — btrfs for btrbk send/receive targets
+  # TODO: replace BACKUP-UUID-HERE with output of: blkid /dev/sdc after mkfs
+  fileSystems."/backup" = {
+    device = "/dev/disk/by-uuid/BACKUP-UUID-HERE";
+    fsType = "btrfs";
+    options = [ "noatime" ];
+  };
+
   # ── CPU ────────────────────────────────────────────────────────────────────
   hardware.cpu.amd.updateMicrocode =
     lib.mkDefault config.hardware.enableRedistributableFirmware;
