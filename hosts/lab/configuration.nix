@@ -265,12 +265,11 @@
       target_preserve_min   = "no";
       target_preserve       = "30d 10w 6m";
 
-      volume."/mnt/data" = {
+      volume."/data" = {
         snapshot_dir = "@snapshots";
         subvolume = {
-          "@data".target      = "/backup/data";
-          "@data_less".target = "/backup/data_less";
-          "@home_newlix".target = "/backup/home_newlix";
+          "@less".target   = "/backup/less";
+          "@newlix".target = "/backup/newlix";
         };
       };
     };

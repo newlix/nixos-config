@@ -42,33 +42,27 @@
   # ── btrfs ──────────────────────────────────────────────────────────────────
   # Two Crucial CT2000T500SSD8 NVMe drives in a single btrfs filesystem.
   # data=single (spans both, ~3.6T usable), metadata=raid1 (mirrored).
-  # Subvolumes: @data → /data, @data_less → /data/less, @home_newlix → /home/newlix
+  # /data is top-level (btrbk uses it as volume root for @snapshots).
   # TODO: replace BTRFS-UUID-HERE with output of: blkid /dev/nvme0n1
   boot.supportedFilesystems = [ "btrfs" ];
 
+  # Top-level mount — btrbk snapshot_dir (@snapshots) lives here
   fileSystems."/data" = {
     device = "/dev/disk/by-uuid/BTRFS-UUID-HERE";
     fsType = "btrfs";
-    options = [ "subvol=@data" "noatime" "compress=zstd" ];
+    options = [ "noatime" ];
   };
 
   fileSystems."/data/less" = {
     device = "/dev/disk/by-uuid/BTRFS-UUID-HERE";
     fsType = "btrfs";
-    options = [ "subvol=@data_less" "noatime" "compress=zstd" ];
+    options = [ "subvol=@less" "noatime" "compress=zstd" ];
   };
 
   fileSystems."/home/newlix" = {
     device = "/dev/disk/by-uuid/BTRFS-UUID-HERE";
     fsType = "btrfs";
-    options = [ "subvol=@home_newlix" "noatime" "compress=zstd" ];
-  };
-
-  # btrbk needs top-level access to create snapshots as sibling subvolumes
-  fileSystems."/mnt/data" = {
-    device = "/dev/disk/by-uuid/BTRFS-UUID-HERE";
-    fsType = "btrfs";
-    options = [ "subvol=/" "noatime" ];
+    options = [ "subvol=@newlix" "noatime" "compress=zstd" ];
   };
 
   # ── Backup disk ────────────────────────────────────────────────────────────

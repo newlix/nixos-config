@@ -58,10 +58,9 @@ echo "Backup btrfs UUID: $BACKUP_UUID"
 
 ```bash
 mount /dev/nvme0n1 /mnt
-btrfs subvolume create /mnt/@data
-btrfs subvolume create /mnt/@data_less
-btrfs subvolume create /mnt/@home_newlix
-# btrbk will use @snapshots as snapshot_dir
+btrfs subvolume create /mnt/@less
+btrfs subvolume create /mnt/@newlix
+# btrbk snapshot_dir
 btrfs subvolume create /mnt/@snapshots
 umount /mnt
 ```
@@ -70,9 +69,10 @@ umount /mnt
 
 ```bash
 mkdir -p /mnt/data/less /mnt/home/newlix
-mount -o subvol=@data,noatime /dev/nvme0n1 /mnt/data
-mount -o subvol=@data_less,noatime /dev/nvme0n1 /mnt/data/less
-mount -o subvol=@home_newlix,noatime /dev/nvme0n1 /mnt/home/newlix
+# /data = top-level (no subvol), btrbk uses it as volume root
+mount -o noatime /dev/nvme0n1 /mnt/data
+mount -o subvol=@less,noatime /dev/nvme0n1 /mnt/data/less
+mount -o subvol=@newlix,noatime /dev/nvme0n1 /mnt/home/newlix
 ```
 
 ### 7. Restore from backup
@@ -133,15 +133,15 @@ mkfs.btrfs -d single -m raid1 /dev/nvme0n1 /dev/nvme1n1
 UUID=$(blkid -s UUID -o value /dev/nvme0n1)
 
 mount /dev/nvme0n1 /tmp/btrfs
-btrfs subvolume create /tmp/btrfs/@data
-btrfs subvolume create /tmp/btrfs/@data_less
-btrfs subvolume create /tmp/btrfs/@home_newlix
+btrfs subvolume create /tmp/btrfs/@less
+btrfs subvolume create /tmp/btrfs/@newlix
+btrfs subvolume create /tmp/btrfs/@snapshots
 umount /tmp/btrfs
 
 mkdir -p /mnt/data/less /mnt/home/newlix
-mount -o subvol=@data,noatime /dev/nvme0n1 /mnt/data
-mount -o subvol=@data_less,noatime /dev/nvme0n1 /mnt/data/less
-mount -o subvol=@home_newlix,noatime /dev/nvme0n1 /mnt/home/newlix
+mount -o noatime /dev/nvme0n1 /mnt/data
+mount -o subvol=@less,noatime /dev/nvme0n1 /mnt/data/less
+mount -o subvol=@newlix,noatime /dev/nvme0n1 /mnt/home/newlix
 ```
 
 ### Step 4 — Fix initrd kernel modules
