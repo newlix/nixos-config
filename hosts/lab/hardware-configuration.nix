@@ -39,27 +39,29 @@
     { device = "/dev/disk/by-uuid/9b6b038a-ff12-46b2-8447-4f793b4a2c53"; }
   ];
 
-  # ── ZFS ────────────────────────────────────────────────────────────────────
-  # Pool "data" is a stripe of two Crucial CT2000T500SSD8 NVMe drives.
-  # Datasets: data → /data, data/less → /data/less, data/newlix → /home/newlix
-  boot.supportedFilesystems = [ "zfs" ];
-  # Must match the hostid recorded in the ZFS pool's label (from current system)
-  networking.hostId = "6900e324";
-  boot.zfs.extraPools = [ "data" ];
+  # ── btrfs ──────────────────────────────────────────────────────────────────
+  # Two Crucial CT2000T500SSD8 NVMe drives in a single btrfs filesystem.
+  # data=single (spans both, ~3.6T usable), metadata=raid1 (mirrored).
+  # Subvolumes: @data → /data, @data_less → /data/less, @home_newlix → /home/newlix
+  # TODO: replace BTRFS-UUID-HERE with output of: blkid /dev/nvme0n1
+  boot.supportedFilesystems = [ "btrfs" ];
 
   fileSystems."/data" = {
-    device = "data";
-    fsType = "zfs";
+    device = "/dev/disk/by-uuid/BTRFS-UUID-HERE";
+    fsType = "btrfs";
+    options = [ "subvol=@data" "noatime" "compress=zstd" ];
   };
 
   fileSystems."/data/less" = {
-    device = "data/less";
-    fsType = "zfs";
+    device = "/dev/disk/by-uuid/BTRFS-UUID-HERE";
+    fsType = "btrfs";
+    options = [ "subvol=@data_less" "noatime" "compress=zstd" ];
   };
 
   fileSystems."/home/newlix" = {
-    device = "data/newlix";
-    fsType = "zfs";
+    device = "/dev/disk/by-uuid/BTRFS-UUID-HERE";
+    fsType = "btrfs";
+    options = [ "subvol=@home_newlix" "noatime" "compress=zstd" ];
   };
 
   # ── CPU ────────────────────────────────────────────────────────────────────

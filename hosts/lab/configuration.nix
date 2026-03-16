@@ -7,12 +7,7 @@
   # Keep last 5 NixOS generations in the boot menu
   boot.loader.systemd-boot.configurationLimit = 5;
 
-  # Use latest LTS kernel with ZFS compatibility
-  boot.kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
-
-  # ── ZFS maintenance ────────────────────────────────────────────────────────
-  services.zfs.autoScrub.enable = true;
-  services.zfs.trim.enable = true;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
 
   # ── Networking ─────────────────────────────────────────────────────────────
   networking.hostName = "lab";
@@ -113,7 +108,6 @@
     uid = 1000;
     shell = pkgs.bash;
     extraGroups = [ "wheel" "networkmanager" "video" "audio" "docker" "i2c" ];
-    # home is managed by ZFS dataset data/newlix — NixOS just needs the path
     home = "/home/newlix";
   };
 
@@ -149,10 +143,6 @@
 
     # Zen Browser (Firefox-based, not in nixpkgs)
     inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
-
-    # ZFS backup (zfs_cold_backup.sh)
-    sanoid         # provides syncoid for ZFS replication
-    hdparm         # spin down backup disk after backup
 
     # Nix tooling
     nixd           # LSP for Nix
