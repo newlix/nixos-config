@@ -133,6 +133,7 @@ UUID=$(blkid -s UUID -o value /dev/nvme0n1)
 
 mount /dev/nvme0n1 /tmp/btrfs
 btrfs subvolume create /tmp/btrfs/@less
+btrfs subvolume create /tmp/btrfs/@more
 btrfs subvolume create /tmp/btrfs/@newlix
 btrfs subvolume create /tmp/btrfs/@snapshots
 umount /tmp/btrfs

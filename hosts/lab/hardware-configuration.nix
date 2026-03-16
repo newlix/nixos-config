@@ -46,7 +46,7 @@
   # TODO: replace BTRFS-UUID-HERE with output of: blkid /dev/nvme0n1
   boot.supportedFilesystems = [ "btrfs" ];
 
-  # Top-level mount — @less, @newlix, @snapshots visible under /data/
+  # Top-level mount — @less, @more, @newlix, @snapshots visible under /data/
   fileSystems."/data" = {
     device = "/dev/disk/by-uuid/BTRFS-UUID-HERE";
     fsType = "btrfs";
