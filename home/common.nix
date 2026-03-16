@@ -88,11 +88,12 @@
       }
 
       # nrs (nix rebuild switch): rebuild NixOS or nix-darwin
-      #   nrs        → rebuild
-      #   nrs -u     → update flake.lock then rebuild
+      #   nrs        → git pull + rebuild
+      #   nrs -u     → git pull + update flake.lock + rebuild
       nrs() {
         local flake
         flake=$(_nix_flake_dir) || return 1
+        git -C "$flake" pull || return 1
         if [ "$1" = "-u" ]; then
           nix flake update --flake "$flake" || return 1
         fi
