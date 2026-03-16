@@ -2,90 +2,78 @@
 
 NixOS configuration for **lab** (AMD Ryzen 7 7700 + NVIDIA RTX 5070 Ti).
 
-## Common Commands
+## Storage layout
+
+```
+/           xfs     sdb2 (465G)
+/boot       vfat    sdb1
+/115        xfs     sda  (1.8T)
+/data       btrfs   nvme0n1 + nvme1n1 (2x 2T, data=single, metadata=raid1)
+├── @less
+├── @more
+├── @newlix          → also mounted at /home/newlix
+└── @snapshots       btrbk snapshot dir
+/backup     btrfs   sdc  (5.5T, noauto — mounted only during backup)
+```
+
+## Backup (btrbk)
+
+Daily `btrfs send/receive` from NVMe to sdc.
+
+| Location | Retention |
+|----------|-----------|
+| `/data/@snapshots` (NVMe) | 7d daily + 4w weekly |
+| `/backup` (sdc) | 30d daily + 10w weekly + 6m monthly |
+
+- Backup disk auto-mounts before btrbk, unmounts after (stays spun down)
+- Snapshots are read-only, browsable as normal directories
+- Restore a file: `cp /data/@snapshots/@less.20260316/path/to/file /data/@less/`
+- Manual backup: `sudo systemctl start btrbk-backup`
+
+## Common commands
 
 ### System rebuild
 
 ```bash
-# Apply system + home-manager changes
-nh os switch /etc/nixos
-
-# Preview what would change without applying
-nh os build /etc/nixos
-```
-
-### Home Manager
-
-```bash
-# Apply home-manager changes only (faster than full rebuild)
-nh home switch /etc/nixos
+nh os switch /etc/nixos        # apply system + home-manager changes
+nh os build /etc/nixos         # preview without applying
 ```
 
 ### Nix
 
 ```bash
-# Update all flake inputs (nixpkgs, home-manager, niri, etc.)
-nix flake update /etc/nixos
-
-# Garbage collect old generations
-nix-collect-garbage --delete-older-than 14d
-sudo nix-collect-garbage --delete-older-than 14d
-
-# List installed generations
-nh os list
+nix flake update /etc/nixos                       # update all flake inputs
+nix-collect-garbage --delete-older-than 14d       # GC user generations
+sudo nix-collect-garbage --delete-older-than 14d  # GC system generations
 ```
 
-### ZFS
+### btrfs
 
 ```bash
-# Check pool health
-zpool status
+btrfs filesystem show          # pool health
+btrfs subvolume list /data     # list subvolumes
+btrfs filesystem df /data      # space usage
+sudo btrfs scrub start /data   # manual scrub
+```
 
-# List datasets
-zfs list
+### Backup disk
 
-# Manual scrub
-zpool scrub data
-
-# Create snapshot
-zfs snapshot data/newlix@$(date +%Y%m%d)
-
-# List snapshots
-zfs list -t snapshot
+```bash
+sudo mount /backup             # manual mount
+ls /backup                     # browse snapshots
+sudo umount /backup            # unmount (spins down)
 ```
 
 ### Docker
 
 ```bash
-# Start a service
-cd ~/services/<name> && docker compose up -d
-
-# Stop a service
-cd ~/services/<name> && docker compose down
-
-# View logs
-docker compose logs -f
-
-# GPU workload (lada)
-cd ~/<project> && bash bin/lada.sh
+cd ~/services/<name> && docker compose up -d   # start
+cd ~/services/<name> && docker compose down    # stop
+docker compose logs -f                         # logs
 ```
 
 ### Samba
 
 ```bash
-# Check Samba status
-sudo systemctl status smbd
-
-# Set/reset Samba password
-sudo smbpasswd -a newlix
-```
-
-### SSH
-
-```bash
-# Generate key
-ssh-keygen -t ed25519
-
-# Copy key to remote
-ssh-copy-id user@host
+sudo smbpasswd -a newlix       # set/reset Samba password
 ```
