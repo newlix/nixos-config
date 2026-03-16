@@ -120,30 +120,4 @@
     mouse = true;
   };
 
-  # ── User packages ──────────────────────────────────────────────────────────
-  home.packages = with pkgs; [
-    gh
-    claude-code
-    git-lfs
-    fzf
-
-    # Go
-    gopls
-    golangci-lint
-
-    # Python
-    uv
-
-    # Node.js
-    nodejs
-
-    # Backup
-    restic
-    rclone
-
-    yt-dlp
-    jq
-    btop
-    ncdu
-  ];
 }

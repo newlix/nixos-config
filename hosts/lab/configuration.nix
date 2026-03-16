@@ -1,6 +1,7 @@
 { config, pkgs, lib, inputs, ... }:
 
 {
+  imports = [ ../../home/packages.nix ];
   # ── Boot ───────────────────────────────────────────────────────────────────
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -52,29 +53,6 @@
 
   # Allow wheel group to use sudo without password (remove if unwanted)
   security.sudo.wheelNeedsPassword = false;
-
-  # ── Packages ───────────────────────────────────────────────────────────────
-  environment.systemPackages = with pkgs; [
-    # Core tools
-    git
-    curl wget
-    vim
-    tmux
-    htop
-    ripgrep fd
-    file
-    unzip zip
-
-    # Dev
-    go
-    gcc
-    gnumake
-    python3
-
-    # Nix tooling
-    nixd           # LSP for Nix
-    alejandra      # Nix formatter
-  ];
 
   # ── Nix settings ───────────────────────────────────────────────────────────
   nix = {

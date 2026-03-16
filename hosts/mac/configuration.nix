@@ -1,6 +1,7 @@
 { config, pkgs, lib, inputs, ... }:
 
 {
+  imports = [ ../../home/packages.nix ];
   # ── Nix settings ───────────────────────────────────────────────────────────
   # Determinate Nix manages the daemon; let it handle nix.conf
   nix.enable = false;
@@ -8,23 +9,8 @@
   # Allow unfree packages (e.g. some fonts, tools)
   nixpkgs.config.allowUnfree = true;
 
-  # ── System packages ────────────────────────────────────────────────────────
+  # ── Mac-only system packages ───────────────────────────────────────────────
   environment.systemPackages = with pkgs; [
-    git
-    curl wget
-    vim
-    tmux
-    htop
-    ripgrep fd
-    file
-    unzip zip
-
-    # Dev
-    go
-    gcc
-    gnumake
-    python3
-
     bash-completion
     docker-client
     eternal-terminal
@@ -32,10 +18,6 @@
     s3cmd
     swiftformat
     zola
-
-    # Nix tooling
-    nixd
-    alejandra
   ];
 
   # ── macOS defaults ─────────────────────────────────────────────────────────
