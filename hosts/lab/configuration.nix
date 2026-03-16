@@ -268,9 +268,9 @@
       volume."/data" = {
         snapshot_dir = "@snapshots";
         subvolume = {
-          "@less".target   = "/backup/less";
-          "@more".target   = "/backup/more";
-          "@newlix".target = "/backup/newlix";
+          "@less".target   = "/backup";
+          "@more".target   = "/backup";
+          "@newlix".target = "/backup";
         };
       };
     };
