@@ -4,7 +4,7 @@
   imports = [
     # niri.homeModules.config enables programs.niri.settings + config.lib.niri.actions
     # without re-installing the compositor (already handled by nixosModules.niri)
-    inputs.niri.homeModules.config
+    #inputs.niri.homeModules.config
     inputs.noctalia.homeModules.default
   ];
 
@@ -15,7 +15,7 @@
   programs.home-manager.enable = true;
 
   # Disable the KDE polkit agent started by niri-flake — Noctalia's Polkit plugin takes over
-  systemd.user.services.polkit-kde-authentication-agent-1.enable = false;
+  systemd.user.services.polkit-kde-authentication-agent-1 = lib.mkForce {};
 
   # ── niri ───────────────────────────────────────────────────────────────────
   programs.niri.settings = {
@@ -61,59 +61,6 @@
       { command = [ "xwayland-satellite" ]; }
     ];
 
-    # ── Keybinds ─────────────────────────────────────────────────────────────
-    # Uses config.lib.niri.actions for type-safe action definitions
-    binds = with config.lib.niri.actions; {
-      # Apps
-      "Mod+Return".action = spawn "foot";
-      "Mod+D".action      = spawn "wofi" "--show" "drun";
-      "Mod+B".action      = spawn "zen";
-
-      # Window management
-      "Mod+Q".action            = close-window;
-      "Mod+F".action            = fullscreen-window;
-      "Mod+Shift+F".action      = toggle-window-floating;
-      "Mod+Shift+Q".action      = quit;
-      "Mod+Shift+Slash".action  = show-hotkey-overlay;
-
-      # Focus (vim-style)
-      "Mod+H".action = focus-column-left;
-      "Mod+L".action = focus-column-right;
-      "Mod+J".action = focus-window-down;
-      "Mod+K".action = focus-window-up;
-
-      # Move windows
-      "Mod+Shift+H".action = move-column-left;
-      "Mod+Shift+L".action = move-column-right;
-      "Mod+Shift+J".action = move-window-down;
-      "Mod+Shift+K".action = move-window-up;
-
-      # Resize columns
-      "Mod+Minus".action = set-column-width "-10%";
-      "Mod+Equal".action = set-column-width "+10%";
-
-      # Workspaces
-      "Mod+1".action = focus-workspace 1;
-      "Mod+2".action = focus-workspace 2;
-      "Mod+3".action = focus-workspace 3;
-      "Mod+4".action = focus-workspace 4;
-      "Mod+5".action = focus-workspace 5;
-      "Mod+Shift+1".action = move-column-to-workspace 1;
-      "Mod+Shift+2".action = move-column-to-workspace 2;
-      "Mod+Shift+3".action = move-column-to-workspace 3;
-      "Mod+Shift+4".action = move-column-to-workspace 4;
-      "Mod+Shift+5".action = move-column-to-workspace 5;
-
-      # Screenshot (grim + slurp)
-      "Print".action       = screenshot;
-      "Shift+Print".action = screenshot-screen;
-      "Alt+Print".action   = screenshot-window;
-
-      # Volume (pipewire/wpctl)
-      "XF86AudioRaiseVolume".action  = spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%+";
-      "XF86AudioLowerVolume".action  = spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-";
-      "XF86AudioMute".action         = spawn "wpctl" "set-mute"   "@DEFAULT_AUDIO_SINK@" "toggle";
-    };
   };
 
   # ── Noctalia ───────────────────────────────────────────────────────────────
@@ -150,12 +97,14 @@
   # ── Git ────────────────────────────────────────────────────────────────────
   programs.git = {
     enable = true;
-    userName  = "newlix";
-    userEmail = "newlix134@gmail.com";
-    extraConfig = {
+    settings = {
+      user = {
+        name  = "newlix";
+        email = "newlix134@gmail.com";
+      };
       init.defaultBranch = "main";
-      credential."https://github.com".helper    = "!/run/current-system/sw/bin/gh auth git-credential";
-      credential."https://gist.github.com".helper = "!/run/current-system/sw/bin/gh auth git-credential";
+      credential."https://github.com".helper    = "!gh auth git-credential";
+      credential."https://gist.github.com".helper = "!gh auth git-credential";
       filter.lfs = {
         process  = "git-lfs filter-process";
         required = true;
@@ -272,17 +221,15 @@
     mpv
     imv
     eza
-    swaylock
     jq
     btop
     nh
-    nvtop
     playerctl
     ncdu
-    mpc-cli
+    mpc
     xwayland-satellite
     superfile
-    xfce.thunar
+    pkgs.thunar
     google-chrome
     sublime4
   ];

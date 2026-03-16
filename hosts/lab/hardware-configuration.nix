@@ -18,7 +18,7 @@
   # ── Filesystems ────────────────────────────────────────────────────────────
   # NOTE: when installing, mount sda1 at /mnt/boot (not /mnt/boot/efi)
   fileSystems."/" = {
-    device = "/dev/disk/by-uuid/176fb7ff-d955-48c1-991e-d1c1c9535f0d";
+    device = "/dev/disk/by-uuid/e3e2a03d-5f1a-4740-9819-3662c0d00827";
     fsType = "xfs";
     options = [ "noatime" ];
   };
@@ -43,27 +43,25 @@
   # Two Crucial CT2000T500SSD8 NVMe drives in a single btrfs filesystem.
   # data=single (spans both, ~3.6T usable), metadata=raid1 (mirrored).
   # /data is top-level (btrbk uses it as volume root for @snapshots).
-  # TODO: replace BTRFS-UUID-HERE with output of: blkid /dev/nvme0n1
   boot.supportedFilesystems = [ "btrfs" ];
 
   # Top-level mount — @less, @more, @newlix, @snapshots visible under /data/
   fileSystems."/data" = {
-    device = "/dev/disk/by-uuid/BTRFS-UUID-HERE";
+    device = "/dev/disk/by-uuid/28d67838-6253-49c4-b6ff-7804faf474f5";
     fsType = "btrfs";
     options = [ "noatime" "compress=zstd" "discard=async" ];
   };
 
   fileSystems."/home/newlix" = {
-    device = "/dev/disk/by-uuid/BTRFS-UUID-HERE";
+    device = "/dev/disk/by-uuid/28d67838-6253-49c4-b6ff-7804faf474f5";
     fsType = "btrfs";
     options = [ "subvol=@newlix" "noatime" "compress=zstd" "discard=async" ];
   };
 
   # ── Backup disk ────────────────────────────────────────────────────────────
   # sdc: WDC WD6004FRYZ 5.5T — btrfs for btrbk send/receive targets
-  # TODO: replace BACKUP-UUID-HERE with output of: blkid /dev/sdc after mkfs
   fileSystems."/backup" = {
-    device = "/dev/disk/by-uuid/BACKUP-UUID-HERE";
+    device = "/dev/disk/by-uuid/692cb7a6-d375-4ad3-9212-57666e66732d";
     fsType = "btrfs";
     options = [ "noatime" "compress=zstd" "noauto" ];
   };

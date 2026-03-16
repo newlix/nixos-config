@@ -33,7 +33,8 @@
   hardware.graphics.enable32Bit = true;  # required for Steam / Proton
 
   nixpkgs.config.allowUnfree = true;  # VSCode, Steam, NVIDIA drivers
-
+  nixpkgs.config.permittedInsecurePackages = [ "openssl-1.1.1w" ];
+  
   # NVIDIA RTX 5070 Ti (GB203/Blackwell)
   # open = true: Blackwell requires the open-source kernel module (nvidia-open)
   # If the stable driver doesn't yet support GB203, switch to:
@@ -61,14 +62,12 @@
   # It sets up the niri session, polkit, GNOME keyring, and xdg-desktop-portal-gnome.
   programs.niri.enable = true;
 
-  # swaylock needs PAM rules to authenticate — must be enabled at system level
-  programs.swaylock.enable = true;
 
   # Login: greetd + tuigreet (TUI greeter, starts a niri Wayland session)
   services.greetd = {
     enable = true;
     settings.default_session = {
-      command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd niri-session";
+      command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd niri-session";
       user = "greeter";
     };
   };
@@ -180,6 +179,7 @@
   home-manager = {
     useGlobalPkgs = true;    # reuse system nixpkgs, avoids a second eval
     useUserPackages = true;  # install user packages to /etc/profiles
+    backupFileExtension = "bak";  # back up conflicting dotfiles instead of failing
     extraSpecialArgs = { inherit inputs; };
     users.newlix = import ./home.nix;
   };
