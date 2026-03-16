@@ -1,8 +1,36 @@
 # nixos-config
 
-Minimal server configuration for **lab** (AMD Ryzen 7 7700 + NVIDIA RTX 5070 Ti).
+NixOS & nix-darwin configuration for two machines:
 
-## Storage layout
+| Host | OS | Arch | Hardware |
+|------|----|------|----------|
+| **lab** | NixOS | x86_64-linux | AMD Ryzen 7 7700 + NVIDIA RTX 5070 Ti |
+| **mac** | macOS (nix-darwin) | aarch64-darwin | Apple Silicon |
+
+## Repo structure
+
+```
+flake.nix
+├── hosts/
+│   ├── lab/          # NixOS-specific (systemd, btrfs, samba, docker …)
+│   └── mac/          # nix-darwin-specific (Homebrew casks, macOS defaults …)
+└── home/
+    └── common.nix    # Shared home-manager config (bash, git, tmux, direnv …)
+```
+
+## Common commands
+
+```bash
+nrs                                            # rebuild (works on both platforms)
+nix flake update /etc/nixos                    # update all flake inputs (lab)
+nix flake update ~/nixos-config                # update all flake inputs (mac)
+nix-collect-garbage --delete-older-than 14d    # GC user generations
+sudo nix-collect-garbage --delete-older-than 14d  # GC system generations
+```
+
+---
+
+## lab — Storage layout
 
 ```
 /           xfs     sdb2 (465G)
@@ -16,7 +44,7 @@ Minimal server configuration for **lab** (AMD Ryzen 7 7700 + NVIDIA RTX 5070 Ti)
 /backup     btrfs   sdc  (5.5T, noauto — mounted only during backup)
 ```
 
-## Backup (btrbk)
+## lab — Backup (btrbk)
 
 Daily `btrfs send/receive` from NVMe to sdc.
 
@@ -30,23 +58,7 @@ Daily `btrfs send/receive` from NVMe to sdc.
 - Restore a file: `cp /data/@snapshots/@less.20260316/path/to/file /data/@less/`
 - Manual backup: `sudo systemctl start btrbk-backup`
 
-## Common commands
-
-### System rebuild
-
-```bash
-sudo nixos-rebuild switch --flake /etc/nixos#lab
-```
-
-### Nix
-
-```bash
-nix flake update /etc/nixos                       # update all flake inputs
-nix-collect-garbage --delete-older-than 14d       # GC user generations
-sudo nix-collect-garbage --delete-older-than 14d  # GC system generations
-```
-
-### btrfs
+## lab — btrfs
 
 ```bash
 btrfs filesystem show          # pool health
@@ -55,7 +67,7 @@ btrfs filesystem df /data      # space usage
 sudo btrfs scrub start /data   # manual scrub
 ```
 
-### Backup disk
+## lab — Backup disk
 
 ```bash
 sudo mount /backup             # manual mount
@@ -63,7 +75,7 @@ ls /backup                     # browse snapshots
 sudo umount /backup            # unmount (spins down)
 ```
 
-### Docker
+## lab — Docker
 
 ```bash
 cd ~/services/<name> && docker compose up -d   # start
@@ -71,7 +83,7 @@ cd ~/services/<name> && docker compose down    # stop
 docker compose logs -f                         # logs
 ```
 
-### Samba
+## lab — Samba
 
 ```bash
 sudo smbpasswd -a newlix       # set/reset Samba password
