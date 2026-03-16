@@ -199,14 +199,7 @@
       bind 'TAB:menu-complete'
 
       # PATH extras
-      export PATH="$HOME/core/sh:$HOME/bin:$HOME/.local/bin:$GOPATH/bin:$HOME/ngc-cli:$PATH"
-
-      # fnm (Node.js version manager — not yet managed by Nix)
-      FNM_PATH="$HOME/.local/share/fnm"
-      if [ -d "$FNM_PATH" ]; then
-        export PATH="$FNM_PATH:$PATH"
-        eval "$(fnm env)"
-      fi
+      export PATH="$HOME/core/sh:$HOME/bin:$GOPATH/bin:$PATH"
 
       # tmux session switcher
       tm() {

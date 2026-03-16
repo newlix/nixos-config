@@ -150,6 +150,10 @@
     # Zen Browser (Firefox-based, not in nixpkgs)
     inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
 
+    # ZFS backup (zfs_cold_backup.sh)
+    sanoid         # provides syncoid for ZFS replication
+    hdparm         # spin down backup disk after backup
+
     # Nix tooling
     nixd           # LSP for Nix
     alejandra      # Nix formatter
