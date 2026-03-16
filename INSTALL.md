@@ -131,6 +131,9 @@ swapon /dev/disk/by-uuid/9b6b038a-ff12-46b2-8447-4f793b4a2c53
 mkfs.btrfs -d single -m raid1 /dev/nvme0n1 /dev/nvme1n1
 UUID=$(blkid -s UUID -o value /dev/nvme0n1)
 
+mkfs.btrfs /dev/sdc
+BACKUP_UUID=$(blkid -s UUID -o value /dev/sdc)
+
 mount /dev/nvme0n1 /tmp/btrfs
 btrfs subvolume create /tmp/btrfs/@less
 btrfs subvolume create /tmp/btrfs/@more
@@ -138,9 +141,10 @@ btrfs subvolume create /tmp/btrfs/@newlix
 btrfs subvolume create /tmp/btrfs/@snapshots
 umount /tmp/btrfs
 
-mkdir -p /mnt/data /mnt/home/newlix
+mkdir -p /mnt/data /mnt/home/newlix /mnt/backup
 mount -o noatime /dev/nvme0n1 /mnt/data
 mount -o subvol=@newlix,noatime /dev/nvme0n1 /mnt/home/newlix
+mount -o noatime /dev/sdc /mnt/backup
 ```
 
 ### Step 4 — Fix initrd kernel modules
@@ -160,6 +164,7 @@ cd /mnt/etc/nixos
 nix-shell -p git --run "git clone https://github.com/newlix/nixos-config ."
 
 sed -i "s/BTRFS-UUID-HERE/$UUID/g" hosts/lab/hardware-configuration.nix
+sed -i "s/BACKUP-UUID-HERE/$BACKUP_UUID/g" hosts/lab/hardware-configuration.nix
 ```
 
 ### Step 6 — Install
