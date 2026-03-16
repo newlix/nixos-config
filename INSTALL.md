@@ -135,6 +135,11 @@ ssh-keygen -t ed25519
 gh auth login
 ```
 
+**Set Samba password** (Samba 密碼跟系統帳號分開，需要手動設一次):
+```bash
+sudo smbpasswd -a newlix
+```
+
 **Rebuild after any config change:**
 ```bash
 nh os switch /etc/nixos
