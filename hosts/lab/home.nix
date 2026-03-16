@@ -151,7 +151,7 @@
   programs.git = {
     enable = true;
     userName  = "newlix";
-    userEmail = "newlix@me.com";
+    userEmail = "newlix134@gmail.com";
     extraConfig = {
       init.defaultBranch = "main";
       credential."https://github.com".helper    = "!/run/current-system/sw/bin/gh auth git-credential";
@@ -253,6 +253,16 @@
     git-lfs
     fzf
     vscode
+
+    # Go
+    gopls          # Go language server (VSCode / Sublime LSP)
+    golangci-lint  # linter
+
+    # Python
+    uv             # Python package & project manager
+
+    # Node.js
+    fnm            # Node.js version manager (binaries work via nix-ld)
 
     # Noctalia required
     brightnessctl  # backlight brightness (also used by Noctalia keybinds)

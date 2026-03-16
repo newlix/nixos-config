@@ -171,6 +171,11 @@
     };
   };
 
+  # ── nix-ld ─────────────────────────────────────────────────────────────────
+  # Provides a dynamic linker stub so non-NixOS binaries (e.g. uv-managed
+  # Python, pre-built ML wheels) can run without patching.
+  programs.nix-ld.enable = true;
+
   # ── Steam ──────────────────────────────────────────────────────────────────
   programs.steam = {
     enable = true;
