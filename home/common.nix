@@ -6,6 +6,21 @@
   # ── Git ────────────────────────────────────────────────────────────────────
   programs.git = {
     enable = true;
+    lfs.enable = true;
+    ignores = [
+      # macOS
+      ".DS_Store"
+      "._*"
+      ".Spotlight-V100"
+      ".Trashes"
+      # Editor swap / backup
+      "*.swp"
+      "*.swo"
+      "*~"
+      # IDE
+      ".vscode"
+      ".idea"
+    ];
     settings = {
       user = {
         name  = "newlix";
@@ -14,12 +29,6 @@
       init.defaultBranch = "main";
       credential."https://github.com".helper    = "!gh auth git-credential";
       credential."https://gist.github.com".helper = "!gh auth git-credential";
-      filter.lfs = {
-        process  = "git-lfs filter-process";
-        required = true;
-        clean    = "git-lfs clean -- %f";
-        smudge   = "git-lfs smudge -- %f";
-      };
     };
   };
 
