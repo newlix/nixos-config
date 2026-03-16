@@ -68,9 +68,9 @@ umount /mnt
 ### 6. Mount btrfs subvolumes
 
 ```bash
-mkdir -p /mnt/data/less /mnt/home/newlix
-# /data = top-level (no subvol), btrbk uses it as volume root
-mount -o noatime /dev/nvme0n1 /mnt/data
+mkdir -p /mnt/mnt/data /mnt/data/less /mnt/home/newlix
+# top-level for btrbk (not user-facing)
+mount -o subvol=/,noatime /dev/nvme0n1 /mnt/mnt/data
 mount -o subvol=@less,noatime /dev/nvme0n1 /mnt/data/less
 mount -o subvol=@newlix,noatime /dev/nvme0n1 /mnt/home/newlix
 ```
@@ -139,7 +139,7 @@ btrfs subvolume create /tmp/btrfs/@snapshots
 umount /tmp/btrfs
 
 mkdir -p /mnt/data/less /mnt/home/newlix
-mount -o noatime /dev/nvme0n1 /mnt/data
+mount -o subvol=/,noatime /dev/nvme0n1 /mnt/mnt/data
 mount -o subvol=@less,noatime /dev/nvme0n1 /mnt/data/less
 mount -o subvol=@newlix,noatime /dev/nvme0n1 /mnt/home/newlix
 ```

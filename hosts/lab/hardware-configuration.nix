@@ -46,11 +46,12 @@
   # TODO: replace BTRFS-UUID-HERE with output of: blkid /dev/nvme0n1
   boot.supportedFilesystems = [ "btrfs" ];
 
-  # Top-level mount — btrbk snapshot_dir (@snapshots) lives here
-  fileSystems."/data" = {
+  # /mnt/data: top-level btrfs mount for btrbk — subvolumes (@less, @newlix,
+  # @snapshots) appear here. Not user-facing; /data is a plain directory.
+  fileSystems."/mnt/data" = {
     device = "/dev/disk/by-uuid/BTRFS-UUID-HERE";
     fsType = "btrfs";
-    options = [ "noatime" ];
+    options = [ "subvol=/" "noatime" ];
   };
 
   fileSystems."/data/less" = {

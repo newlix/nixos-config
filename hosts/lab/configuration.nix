@@ -265,7 +265,7 @@
       target_preserve_min   = "no";
       target_preserve       = "30d 10w 6m";
 
-      volume."/data" = {
+      volume."/mnt/data" = {
         snapshot_dir = "@snapshots";
         subvolume = {
           "@less".target   = "/backup/less";
