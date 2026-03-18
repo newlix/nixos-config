@@ -108,9 +108,12 @@
       # PATH extras
       export PATH="$HOME/core/sh:$HOME/bin:$HOME/go/bin:$PATH"
 
-      # macOS: Sublime Text CLI
+      # macOS-only
       if [[ -d "/Applications/Sublime Text.app" ]]; then
         export PATH="/Applications/Sublime Text.app/Contents/SharedSupport/bin:$PATH"
+      fi
+      if [[ -d "/Applications/Android Studio.app" ]]; then
+        export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"
       fi
 
       # tmux session switcher
