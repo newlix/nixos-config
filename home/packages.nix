@@ -37,6 +37,7 @@
     # Go
     gopls
     golangci-lint
+    go-tools # staticcheck
 
     # Python
     uv
