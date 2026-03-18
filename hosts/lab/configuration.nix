@@ -71,6 +71,33 @@
   # Provides a dynamic linker stub so non-NixOS binaries (e.g. uv-managed
   # Python, pre-built ML wheels) can run without patching.
   programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    # Chromium / Electron runtime dependencies
+    glib
+    nss
+    nspr
+    atk
+    cups
+    dbus
+    libdrm
+    gtk3
+    pango
+    cairo
+    xorg.libX11
+    xorg.libXcomposite
+    xorg.libXdamage
+    xorg.libXext
+    xorg.libXfixes
+    xorg.libXrandr
+    xorg.libxcb
+    mesa
+    libgbm
+    expat
+    alsa-lib
+    at-spi2-atk
+    at-spi2-core
+    libxkbcommon
+  ];
 
   # ── envfs ────────────────────────────────────────────────────────────────
   # Mounts a FUSE filesystem on /usr/bin and /bin that provides executables
