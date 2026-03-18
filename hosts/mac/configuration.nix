@@ -37,7 +37,6 @@
       FXPreferredViewStyle = "clmv";
     };
     NSGlobalDomain = {
-      AppleShowAllExtensions = true;
       InitialKeyRepeat = 15;
       KeyRepeat = 2;
     };

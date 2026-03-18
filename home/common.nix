@@ -74,15 +74,7 @@
       parse_git_branch() {
         git branch 2>/dev/null | sed -n 's/^\* \(.*\)/ (\1)/p'
       }
-      red='\[\e[1;31m\]'
-      green='\[\e[1;32m\]'
-      yellow='\[\e[1;33m\]'
-      blue='\[\e[1;34m\]'
-      reset='\[\e[0m\]'
-      PS1="$blue\w$yellow\$(parse_git_branch) $red>$yellow>$green>$reset "
-
-      # fzf keybindings (Ctrl+R history, Ctrl+T files)
-      eval "$(fzf --bash)"
+      PS1='\[\e[1;34m\]\w\[\e[1;33m\]$(parse_git_branch) \[\e[1;31m\]>\[\e[1;33m\]>\[\e[1;32m\]>\[\e[0m\] '
 
       # Resolve flake directory based on OS
       _nix_flake_dir() {
@@ -129,6 +121,12 @@
           || tmux new-session
       }
     '';
+  };
+
+  # ── fzf ───────────────────────────────────────────────────────────────────
+  programs.fzf = {
+    enable = true;
+    enableBashIntegration = true;
   };
 
   # ── direnv ─────────────────────────────────────────────────────────────────

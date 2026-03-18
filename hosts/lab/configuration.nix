@@ -83,13 +83,13 @@
     gtk3
     pango
     cairo
-    xorg.libX11
-    xorg.libXcomposite
-    xorg.libXdamage
-    xorg.libXext
-    xorg.libXfixes
-    xorg.libXrandr
-    xorg.libxcb
+    libx11
+    libxcomposite
+    libxdamage
+    libxext
+    libxfixes
+    libxrandr
+    libxcb
     mesa
     libgbm
     expat
@@ -136,39 +136,30 @@
         # Disable SMB1 — macOS uses SMB2/3, SMB1 is a security risk
         "server min protocol"                    = "SMB2";
         "server signing"                         = "auto";
+        # Shared defaults for all shares
+        "create mask"        = "0700";
+        "directory mask"     = "0700";
+        "ea support"         = "yes";
+        "veto files"         = "/.DS_Store/.Spotlight-V100/.Trashes/.fseventsd/";
+        "delete veto files"  = "yes";
       };
       data = {
         path = "/data";
         browseable = "yes";
         "read only" = "no";
-        "create mask" = "0700";
-        "directory mask" = "0700";
         "valid users" = "newlix";
-        "ea support" = "yes";
-        "veto files" = "/.DS_Store/.Spotlight-V100/.Trashes/.fseventsd/";
-        "delete veto files" = "yes";
       };
       newlix = {
         path = "/home/newlix";
         browseable = "yes";
         "read only" = "no";
-        "create mask" = "0700";
-        "directory mask" = "0700";
         "valid users" = "newlix";
-        "ea support" = "yes";
-        "veto files" = "/.DS_Store/.Spotlight-V100/.Trashes/.fseventsd/";
-        "delete veto files" = "yes";
       };
       "115" = {
         path = "/115";
         browseable = "yes";
         "read only" = "no";
-        "create mask" = "0700";
-        "directory mask" = "0700";
         "valid users" = "newlix";
-        "ea support" = "yes";
-        "veto files" = "/.DS_Store/.Spotlight-V100/.Trashes/.fseventsd/";
-        "delete veto files" = "yes";
       };
     };
   };
@@ -208,7 +199,8 @@
   # Mount backup disk only during btrbk, unmount after to keep HDD spun down
   systemd.services."btrbk-backup".serviceConfig = {
     ExecStartPre = "${pkgs.util-linux}/bin/mount /backup";
-    ExecStartPost = "${pkgs.util-linux}/bin/umount /backup";
+    # ExecStopPost runs regardless of success/failure; '-' tolerates already-unmounted
+    ExecStopPost = "-${pkgs.util-linux}/bin/umount /backup";
   };
 
   # ── SSH ────────────────────────────────────────────────────────────────────

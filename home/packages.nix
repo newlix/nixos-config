@@ -33,8 +33,6 @@
     gh
     claude-code
     gemini-cli-bin
-    git-lfs
-    fzf
 
     # Go
     gopls
