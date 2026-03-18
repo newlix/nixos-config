@@ -32,6 +32,7 @@
   home-manager.users.newlix.home.packages = with pkgs; [
     gh
     claude-code
+    gemini-cli-bin
     git-lfs
     fzf
 

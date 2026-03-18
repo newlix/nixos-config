@@ -217,6 +217,9 @@
     settings.PasswordAuthentication = false;
   };
 
+  # ── Tailscale ─────────────────────────────────────────────────────────────
+  services.tailscale.enable = true;
+
   # ── Eternal Terminal ─────────────────────────────────────────────────────
   services.eternal-terminal.enable = true;
   networking.firewall.allowedTCPPorts = [ 2022 ];
