@@ -39,6 +39,9 @@
     golangci-lint
     go-tools # staticcheck
 
+    # Swift
+    swiftlint
+
     # Python
     uv
 

@@ -57,6 +57,14 @@
       Xcode = 497799835;
     };
 
+    taps = [
+      "peripheryapp/periphery"
+    ];
+
+    brews = [
+      "periphery"
+    ];
+
     casks = [
       "android-studio"
       "antigravity"
