@@ -8,7 +8,7 @@
   # Keep last 5 NixOS generations in the boot menu
   boot.loader.systemd-boot.configurationLimit = 5;
 
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.linuxPackages;  # LTS — avoids NVIDIA driver build failures on kernel bumps
 
   # ── Networking ─────────────────────────────────────────────────────────────
   networking.hostName = "lab";
