@@ -99,14 +99,14 @@
           nix flake update --flake "$flake" || return 1
         fi
         if [ -d /etc/nixos ]; then
-          sudo nixos-rebuild switch --flake "$flake"
+          sudo nixos-rebuild switch --flake "$flake#lab"
         else
-          sudo darwin-rebuild switch --flake "$flake"
+          sudo darwin-rebuild switch --flake "$flake#mac"
         fi
       }
 
       # PATH extras
-      export PATH="$HOME/core/sh:$HOME/bin:$GOPATH/bin:$PATH"
+      export PATH="$HOME/core/sh:$HOME/bin:$HOME/go/bin:$PATH"
 
       # macOS: Sublime Text CLI
       if [[ -d "/Applications/Sublime Text.app" ]]; then

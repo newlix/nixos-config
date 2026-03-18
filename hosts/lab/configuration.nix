@@ -198,7 +198,7 @@
 
   # Mount backup disk only during btrbk, unmount after to keep HDD spun down
   systemd.services."btrbk-backup".serviceConfig = {
-    ExecStartPre = "${pkgs.util-linux}/bin/mount /backup";
+    ExecStartPre = "-${pkgs.util-linux}/bin/mount /backup";
     # ExecStopPost runs regardless of success/failure; '-' tolerates already-unmounted
     ExecStopPost = "-${pkgs.util-linux}/bin/umount /backup";
   };
