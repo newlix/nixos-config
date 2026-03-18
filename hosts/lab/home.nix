@@ -9,6 +9,6 @@
 
   # Lab-specific packages (NVIDIA GPU available)
   home.packages = with pkgs; [
-    (ffmpeg.override { withCuda = true; })
+    ffmpeg
   ];
 }
