@@ -10,7 +10,7 @@
     tmux
     htop
     ripgrep fd
-    file
+    file lsof
     unzip zip
 
     # Dev
