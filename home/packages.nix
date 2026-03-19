@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   # ── Shared system packages ────────────────────────────────────────────────
@@ -40,8 +40,10 @@
     golangci-lint
     go-tools # staticcheck
 
-    # Swift
+    # Swift (macOS only)
+  ] ++ lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
     swiftlint
+  ] ++ (with pkgs; [
 
     # Python
     uv
@@ -57,5 +59,5 @@
     jq
     btop
     ncdu
-  ];
+  ]);
 }
