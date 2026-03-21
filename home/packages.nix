@@ -7,6 +7,7 @@
     git
     curl wget
     vim
+    helix
     tmux
     htop
     ripgrep fd
