@@ -86,10 +86,16 @@
     ];
   };
 
+  # ── Shell ──────────────────────────────────────────────────────────────────
+  environment.shells = [ pkgs.bash ];
+  users.knownUsers = [ "newlix" ];
+
   # ── Users ──────────────────────────────────────────────────────────────────
   system.primaryUser = "newlix";
   users.users.newlix = {
     home = "/Users/newlix";
+    shell = pkgs.bash;
+    uid = 501;
   };
 
   # ── Security ───────────────────────────────────────────────────────────────
