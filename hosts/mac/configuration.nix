@@ -51,11 +51,7 @@
       cleanup = "uninstall";  # remove formulae/casks not listed here
     };
 
-    masApps = {
-      LINE = 539883307;
-      "The Unarchiver" = 425424353;
-      Xcode = 497799835;
-    };
+    masApps = { };
 
     taps = [
       "peripheryapp/periphery"
