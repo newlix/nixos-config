@@ -63,6 +63,8 @@
     walker
     elephant
     swaybg
+    pavucontrol
+    swaylock-effects
 
     # Browser
     google-chrome
@@ -72,6 +74,12 @@
 
     # File manager
     nautilus
+
+    # Image viewer
+    loupe
+
+    # Calendar
+    gnome-calendar
 
     yt-dlp
     jq

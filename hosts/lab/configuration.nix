@@ -43,6 +43,7 @@
     noto-fonts-cjk-sans
     noto-fonts-cjk-serif
     lxgw-wenkai
+    nerd-fonts.symbols-only
   ];
 
   # ── Graphics ───────────────────────────────────────────────────────────────
@@ -241,6 +242,9 @@
       user = "greeter";
     };
   };
+
+  # ── Swaylock ──────────────────────────────────────────────────────────────
+  security.pam.services.swaylock = {};
 
   # ── SSH ────────────────────────────────────────────────────────────────────
   services.openssh = {

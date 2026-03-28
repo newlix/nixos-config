@@ -10,6 +10,7 @@
   # Lab-specific packages (NVIDIA GPU available)
   home.packages = with pkgs; [
     ffmpeg
+    inputs.zen-browser.packages.${pkgs.system}.default
   ];
 
   # ── Fcitx5 ────────────────────────────────────────────────────────────────

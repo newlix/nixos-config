@@ -9,9 +9,11 @@
 
     nix-darwin.url = "github:LnL7/nix-darwin";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+
+    zen-browser.url = "github:0xc000022070/zen-browser-flake";
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-darwin, ... } @ inputs: {
+  outputs = { self, nixpkgs, home-manager, nix-darwin, zen-browser, ... } @ inputs: {
 
     # ── NixOS (lab) ────────────────────────────────────────────────────────
     nixosConfigurations.lab = nixpkgs.lib.nixosSystem {
