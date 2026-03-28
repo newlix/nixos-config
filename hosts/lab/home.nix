@@ -11,4 +11,18 @@
   home.packages = with pkgs; [
     ffmpeg
   ];
+
+  # ── Fcitx5 ────────────────────────────────────────────────────────────────
+  xdg.configFile."fcitx5/config".text = ''
+    [Hotkey]
+    EnumerateWithTriggerKeys=False
+    [Hotkey/TriggerKeys]
+    0=Control+space
+    [Hotkey/EnumerateForwardKeys]
+    0=
+    [Behavior]
+    PreeditEnabledByDefault=True
+    ShareInputState=No
+    DefaultPageSize=5
+  '';
 }

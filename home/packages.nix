@@ -11,18 +11,20 @@
     tmux
     htop
     ripgrep fd
-    file lsof
+    file lsof psmisc
     unzip zip
 
     # Dev
     go
     gcc
     gnumake
-    python3
-
     bash-completion
     s3cmd
     zola
+
+    # VNC (headless browser auth)
+    xorg.xorgserver  # Xvfb
+    x11vnc
 
     # Nix tooling
     nixd           # LSP for Nix
@@ -54,6 +56,22 @@
     # Backup
     restic
     rclone
+
+    # Niri ecosystem
+    waybar
+    foot
+    walker
+    elephant
+    swaybg
+
+    # Browser
+    google-chrome
+
+    # Media
+    celluloid
+
+    # File manager
+    nautilus
 
     yt-dlp
     jq

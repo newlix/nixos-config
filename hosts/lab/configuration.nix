@@ -18,6 +18,33 @@
   time.timeZone = "Asia/Taipei";
   i18n.defaultLocale = "en_US.UTF-8";
 
+  # ── Input method (fcitx5 + chewing) ───────────────────────────────────────
+  i18n.inputMethod = {
+    enable = true;
+    type = "fcitx5";
+    fcitx5.addons = with pkgs; [
+      fcitx5-chewing
+    ];
+  };
+
+  # ── Caps Lock → Ctrl+Space (keyd) ─────────────────────────────────────────
+  services.keyd = {
+    enable = true;
+    keyboards.default = {
+      ids = [ "*" ];
+      settings.main = {
+        capslock = "C-space";
+      };
+    };
+  };
+
+  # ── Fonts ──────────────────────────────────────────────────────────────────
+  fonts.packages = with pkgs; [
+    noto-fonts-cjk-sans
+    noto-fonts-cjk-serif
+    lxgw-wenkai
+  ];
+
   # ── Graphics ───────────────────────────────────────────────────────────────
   hardware.graphics.enable = true;
 
@@ -201,6 +228,18 @@
     ExecStartPre = "-${pkgs.util-linux}/bin/mount /backup";
     # ExecStopPost runs regardless of success/failure; '-' tolerates already-unmounted
     ExecStopPost = "-${pkgs.util-linux}/bin/umount /backup";
+  };
+
+  # ── Niri (Wayland compositor) ──────────────────────────────────────────────
+  programs.niri.enable = true;
+
+  # greetd login manager — auto-launches niri
+  services.greetd = {
+    enable = true;
+    settings.default_session = {
+      command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --cmd niri-session";
+      user = "greeter";
+    };
   };
 
   # ── SSH ────────────────────────────────────────────────────────────────────
