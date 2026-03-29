@@ -78,8 +78,20 @@
     # Image viewer
     loupe
 
-    # Calendar
-    gnome-calendar
+    # XWayland
+    xwayland-satellite
+
+    # Notifications
+    mako
+
+    # Music
+    mpd
+    ncmpcpp
+    mpc
+
+    # Editor
+    fresh-editor
+    sublime4
 
     yt-dlp
     jq

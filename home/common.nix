@@ -99,7 +99,9 @@
           nix flake update --flake "$flake" || return 1
         fi
         if [ -d /etc/nixos ]; then
-          sudo nixos-rebuild switch --flake "$flake#lab"
+          sudo nixos-rebuild switch --flake "$flake#lab" && \
+            systemctl --user restart elephant 2>/dev/null; \
+            pkill walker; sleep 1; walker --gapplication-service &disown 2>/dev/null
         else
           sudo darwin-rebuild switch --flake "$flake#mac"
         fi

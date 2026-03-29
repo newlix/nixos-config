@@ -50,6 +50,9 @@
   hardware.graphics.enable = true;
 
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.permittedInsecurePackages = [
+    "openssl-1.1.1w"
+  ];
 
   # NVIDIA RTX 5070 Ti (GB203/Blackwell)
   services.xserver.videoDrivers = [ "nvidia" ];
@@ -229,6 +232,12 @@
     ExecStartPre = "-${pkgs.util-linux}/bin/mount /backup";
     # ExecStopPost runs regardless of success/failure; '-' tolerates already-unmounted
     ExecStopPost = "-${pkgs.util-linux}/bin/umount /backup";
+  };
+
+  # ── Steam ─────────────────────────────────────────────────────────────────
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true;
   };
 
   # ── Niri (Wayland compositor) ──────────────────────────────────────────────
