@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(systemctl:*)",
+      "Bash(journalctl:*)",
+      "Bash(lsblk:*)",
+      "Bash(sudo systemctl:*)",
+      "Bash(sudo -u newlix XDG_RUNTIME_DIR=/run/user/1000 systemctl --user stop toshy-config.service toshy-session-monitor.service toshy-cosmic-dbus.service toshy-kwin-dbus.service toshy-wlroots-dbus.service 2>&1; sudo -u newlix XDG_RUNTIME_DIR=/run/user/1000 systemctl --user disable toshy-config.service toshy-session-monitor.service toshy-cosmic-dbus.service toshy-kwin-dbus.service toshy-wlroots-dbus.service 2>&1; sudo -u newlix XDG_RUNTIME_DIR=/run/user/1000 systemctl --user reset-failed 2>&1)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git:*)",
+      "Bash(sudo -u newlix git push)",
+      "Bash(sudo -u newlix git config --global --add safe.directory /etc/nixos && sudo -u newlix git push)",
+      "Bash(sudo -u newlix bash -lc 'which gh' 2>/dev/null)",
+      "Bash(sudo -u newlix bash -lc 'git push')",
+      "Bash(sudo -u newlix bash -lc 'gh auth status' 2>&1)",
+      "Bash(sudo -u newlix bash -lc 'git config --global --add safe.directory /etc/nixos && git push')",
+      "Bash(sudo -u newlix bash -lc 'GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=safe.directory GIT_CONFIG_VALUE_0=/etc/nixos git push')",
+      "Bash(sudo -u newlix bash -c 'GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=safe.directory GIT_CONFIG_VALUE_0=/etc/nixos /etc/profiles/per-user/newlix/bin/gh auth setup-git 2>&1; GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=safe.directory GIT_CONFIG_VALUE_0=/etc/nixos PATH=/etc/profiles/per-user/newlix/bin:$PATH git push')",
+      "Bash(chown:*)",
+      "Bash(nix search:*)",
+      "Bash(sudo -u newlix XDG_RUNTIME_DIR=/run/user/1000 systemctl --user status noctalia-shell 2>&1; sudo -u newlix XDG_RUNTIME_DIR=/run/user/1000 systemctl --user list-units '*noctalia*' '*quickshell*' 2>&1)",
+      "Bash(which noctalia-shell:*)",
+      "Bash(sudo -u newlix XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=wayland-1 journalctl --user -b --no-pager 2>&1 | grep -i -E 'noctalia|quickshell|spawn' | tail -20)"
+    ]
+  }
+}

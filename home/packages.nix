@@ -23,12 +23,13 @@
     zola
 
     # VNC (headless browser auth)
-    xorg.xorgserver  # Xvfb
+    xorg-server  # Xvfb
     x11vnc
 
     # Nix tooling
     nixd           # LSP for Nix
     alejandra      # Nix formatter
+    adwaita-icon-theme
   ];
 
   # ── Shared user packages (home-manager) ───────────────────────────────────
@@ -62,36 +63,48 @@
     foot
     walker
     elephant
-    swaybg
     pavucontrol
     swaylock-effects
 
     # Browser
     google-chrome
 
-    # Media
-    celluloid
-
     # File manager
     nautilus
+    ffmpegthumbnailer
+    gst_all_1.gst-plugins-base
+    gst_all_1.gst-plugins-good
+    gst_all_1.gst-plugins-bad
+    gst_all_1.gst-plugins-ugly
+    gst_all_1.gst-libav
+    gst_all_1.gst-vaapi
+    papirus-icon-theme
+    dconf
 
     # Image viewer
     loupe
+
+    # Screenshot
+    swappy
+
+    # Communication
+    telegram-desktop
 
     # XWayland
     xwayland-satellite
 
     # Notifications
     mako
+    libnotify
 
     # Music
-    mpd
-    ncmpcpp
-    mpc
+    amberol
 
     # Editor
     fresh-editor
     sublime4
+    zed-editor
+    playerctl
 
     yt-dlp
     jq

@@ -3,6 +3,15 @@
 {
   programs.home-manager.enable = true;
 
+  # ── Pointer Cursor ────────────────────────────────────────────────────────
+  home.pointerCursor = {
+    package = pkgs.adwaita-icon-theme;
+    name    = "Adwaita";
+    size    = 24;
+    gtk.enable = true;
+    x11.enable = true;
+  };
+
   # ── Git ────────────────────────────────────────────────────────────────────
   programs.git = {
     enable = true;
@@ -52,6 +61,7 @@
     shellAliases = {
       grep = "grep --color=auto";
       df   = "df -h";
+      what-file = "lsof -p $(pgrep -d, -f amberol) 2>/dev/null | grep -iE '\\.(mp3|flac|wav|m4a|ogg|opus)$' | awk '{print $NF}' | head -n 1";
 
       yt-dlp-audio = "yt-dlp -f 'bestaudio' -x --audio-format opus";
       yt-dlp-video = "yt-dlp -S ext:mp4:m4a";
@@ -99,9 +109,12 @@
           nix flake update --flake "$flake" || return 1
         fi
         if [ -d /etc/nixos ]; then
-          sudo nixos-rebuild switch --flake "$flake#lab" && \
-            systemctl --user restart elephant 2>/dev/null; \
-            pkill walker; sleep 1; walker --gapplication-service &disown 2>/dev/null
+          sudo nixos-rebuild switch --flake "$flake#lab" && {
+            systemctl --user restart elephant 2>/dev/null
+            sleep 2
+            pkill walker; sleep 2; walker --gapplication-service &disown 2>/dev/null
+            pkill waybar; waybar &disown 2>/dev/null
+          }
         else
           sudo darwin-rebuild switch --flake "$flake#mac"
         fi

@@ -23,7 +23,7 @@
     enable = true;
     type = "fcitx5";
     fcitx5.addons = with pkgs; [
-      fcitx5-chewing
+      fcitx5-mcbopomofo
     ];
   };
 
@@ -44,6 +44,7 @@
     noto-fonts-cjk-serif
     lxgw-wenkai
     nerd-fonts.symbols-only
+    hack-font
   ];
 
   # ── Graphics ───────────────────────────────────────────────────────────────
@@ -128,6 +129,13 @@
     at-spi2-atk
     at-spi2-core
     libxkbcommon
+    libx11
+    libxcursor
+    libxext
+    libxfixes
+    libxi
+    libxrender
+    libxtst
   ];
 
   # ── envfs ────────────────────────────────────────────────────────────────
@@ -240,6 +248,13 @@
     remotePlay.openFirewall = true;
   };
 
+  # ── VNC (headless browser auth) ──────────────────────────────────────────
+  # Added to systemPackages for x11vnc etc.
+  environment.systemPackages = with pkgs; [
+    xorg-server
+    x11vnc
+  ];
+
   # ── Niri (Wayland compositor) ──────────────────────────────────────────────
   programs.niri.enable = true;
 
@@ -247,7 +262,7 @@
   services.greetd = {
     enable = true;
     settings.default_session = {
-      command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --cmd niri-session";
+      command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd niri-session";
       user = "greeter";
     };
   };
