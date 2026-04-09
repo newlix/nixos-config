@@ -290,14 +290,14 @@
 
       "custom/sysinfo" = {
         interval = 5;
-        exec = "echo \"CPU $(awk '{u=$2+$4; t=$2+$4+$5; if(NR>1) printf \"%.0f\", (u-ou)/(t-ot)*100; ou=u; ot=t}' <(grep '^cpu ' /proc/stat) <(sleep 0.5; grep '^cpu ' /proc/stat))%  RAM $(free | awk '/Mem/{printf \"%.0f\", $3/$2*100}')%  $(( $(cat /sys/class/hwmon/hwmon4/temp1_input 2>/dev/null || echo 0) / 1000 ))°C\"";
+        exec = "echo \"CPU $(awk '{u=$2+$4; t=$2+$4+$5; if(NR>1) printf \"%.0f\", (u-ou)/(t-ot)*100; ou=u; ot=t}' <(grep '^cpu ' /proc/stat) <(sleep 0.5; grep '^cpu ' /proc/stat))%  RAM $(free | awk '/Mem/{printf \"%.0f\", $3/$2*100}')%  $(( $(cat $(dirname $(grep -rl k10temp /sys/class/hwmon/*/name 2>/dev/null | head -1))/temp1_input 2>/dev/null || echo 0) / 1000 ))°C\"";
         tooltip = false;
         on-click = "foot -e btop";
       };
 
       "custom/netspeed" = {
         interval = 5;
-        exec = "rx0=$(cat /sys/class/net/eno1/statistics/rx_bytes 2>/dev/null); tx0=$(cat /sys/class/net/eno1/statistics/tx_bytes 2>/dev/null); sleep 1; rx1=$(cat /sys/class/net/eno1/statistics/rx_bytes 2>/dev/null); tx1=$(cat /sys/class/net/eno1/statistics/tx_bytes 2>/dev/null); rxs=$(( (rx1-rx0) )); txs=$(( (tx1-tx0) )); if [ $rxs -gt 1048576 ]; then rxf=$(printf '%5.1fM' $(echo \"scale=1; $rxs/1048576\" | bc)); elif [ $rxs -gt 1024 ]; then rxf=$(printf '%5dK' $(($rxs/1024))); else rxf=$(printf '%5dB' $rxs); fi; if [ $txs -gt 1048576 ]; then txf=$(printf '%5.1fM' $(echo \"scale=1; $txs/1048576\" | bc)); elif [ $txs -gt 1024 ]; then txf=$(printf '%5dK' $(($txs/1024))); else txf=$(printf '%5dB' $txs); fi; echo \"▼$rxf ▲$txf\"";
+        exec = "iface=$(ip route show default | awk '/default/{print $5; exit}'); rx0=$(cat /sys/class/net/$iface/statistics/rx_bytes 2>/dev/null); tx0=$(cat /sys/class/net/$iface/statistics/tx_bytes 2>/dev/null); sleep 1; rx1=$(cat /sys/class/net/$iface/statistics/rx_bytes 2>/dev/null); tx1=$(cat /sys/class/net/$iface/statistics/tx_bytes 2>/dev/null); rxs=$(( (rx1-rx0) )); txs=$(( (tx1-tx0) )); if [ $rxs -gt 1048576 ]; then rxf=$(printf '%5.1fM' $(echo \"scale=1; $rxs/1048576\" | bc)); elif [ $rxs -gt 1024 ]; then rxf=$(printf '%5dK' $(($rxs/1024))); else rxf=$(printf '%5dB' $rxs); fi; if [ $txs -gt 1048576 ]; then txf=$(printf '%5.1fM' $(echo \"scale=1; $txs/1048576\" | bc)); elif [ $txs -gt 1024 ]; then txf=$(printf '%5dK' $(($txs/1024))); else txf=$(printf '%5dB' $txs); fi; echo \"▼$rxf ▲$txf\"";
         on-click = "foot -e sudo ${pkgs.bandwhich}/bin/bandwhich";
         tooltip = false;
       };
