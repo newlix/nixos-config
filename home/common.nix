@@ -99,7 +99,7 @@
         if [[ "$OSTYPE" == "linux-gnu"* ]]; then
           sudo nixos-rebuild switch --flake "$flake#$host" && {
             # Graceful restart of UI components
-            pkill waybar; sleep 0.5; waybar & disown
+            pkill waybar; sleep 0.5; waybar &>/dev/null & disown $!
           }
         else
           sudo darwin-rebuild switch --flake "$flake#$host"
