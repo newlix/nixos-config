@@ -17,18 +17,9 @@
     enable = true;
     lfs.enable = true;
     ignores = [
-      # macOS
-      ".DS_Store"
-      "._*"
-      ".Spotlight-V100"
-      ".Trashes"
-      # Editor swap / backup
-      "*.swp"
-      "*.swo"
-      "*~"
-      # IDE
-      ".vscode"
-      ".idea"
+      ".DS_Store" "._*" ".Spotlight-V100" ".Trashes"
+      "*.swp" "*.swo" "*~"
+      ".vscode" ".idea"
     ];
     settings = {
       user = {
@@ -60,9 +51,6 @@
 
     shellAliases = {
       grep = "grep --color=auto";
-      df   = "df -h";
-      what-file = "lsof -p $(pgrep -d, -f amberol) 2>/dev/null | grep -iE '\\.(mp3|flac|wav|m4a|ogg|opus)$' | awk '{print $NF}' | head -n 1";
-
       yt-dlp-audio = "yt-dlp -f 'bestaudio' -x --audio-format opus";
       yt-dlp-video = "yt-dlp -S ext:mp4:m4a";
       cl = "claude --dangerously-skip-permissions";
@@ -72,6 +60,8 @@
     } else {
       ls = "ls --color=auto";
       ll = "ls -lah --color=auto";
+      zed = "zeditor";
+      what-file = "lsof -p $(pgrep -d, -f amberol) 2>/dev/null | grep -iE '\\.(mp3|flac|wav|m4a|ogg|opus)$' | awk '{print $NF}' | head -n 1";
     });
 
     initExtra = ''
@@ -86,37 +76,33 @@
       }
       PS1='\[\e[1;34m\]\w\[\e[1;33m\]$(parse_git_branch) \[\e[1;31m\]>\[\e[1;33m\]>\[\e[1;32m\]>\[\e[0m\] '
 
-      # Resolve flake directory based on OS
-      _nix_flake_dir() {
-        if [ -d /etc/nixos ]; then
-          echo /etc/nixos
-        elif [ -d "$HOME/nixos-config" ]; then
-          echo "$HOME/nixos-config"
-        else
-          echo "No nixos config found" >&2
-          return 1
-        fi
-      }
-
-      # nrs (nix rebuild switch): rebuild NixOS or nix-darwin
-      #   nrs        → git pull + rebuild
-      #   nrs -u     → git pull + update flake.lock + rebuild
+      # nrs (nix rebuild switch): Generic rebuild script
       nrs() {
-        local flake
-        flake=$(_nix_flake_dir) || return 1
+        local flake="/etc/nixos"
+        [ ! -d "$flake" ] && flake="$HOME/nixos-config"
+        [ ! -d "$flake" ] && { echo "No nixos config found" >&2; return 1; }
+
+        local host=$(hostname)
+        # Handle cases where hostname might not match flake output (e.g. macOS)
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            host="mac"
+        elif [[ "$host" != "lab" ]]; then
+            echo "Unknown host: $host. Add a flake output for it." >&2
+            return 1
+        fi
+
         git -C "$flake" pull || return 1
         if [ "$1" = "-u" ]; then
           nix flake update --flake "$flake" || return 1
         fi
-        if [ -d /etc/nixos ]; then
-          sudo nixos-rebuild switch --flake "$flake#lab" && {
-            systemctl --user restart elephant 2>/dev/null
-            sleep 2
-            pkill walker; sleep 2; walker --gapplication-service &disown 2>/dev/null
-            pkill waybar; waybar &disown 2>/dev/null
+
+        if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+          sudo nixos-rebuild switch --flake "$flake#$host" && {
+            # Graceful restart of UI components
+            pkill waybar; sleep 0.5; waybar & disown
           }
         else
-          sudo darwin-rebuild switch --flake "$flake#mac"
+          sudo darwin-rebuild switch --flake "$flake#$host"
         fi
       }
 
@@ -130,17 +116,6 @@
       if [[ -d "/Applications/Sublime Text.app" ]]; then
         export PATH="/Applications/Sublime Text.app/Contents/SharedSupport/bin:$PATH"
       fi
-      if [[ -d "/Applications/Android Studio.app" ]]; then
-        export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"
-      fi
-
-      # tmux session switcher
-      tm() {
-        local session
-        session=$(tmux ls -F "#{session_name}" | fzf --exit-0) \
-          && tmux attach -t "$session" \
-          || tmux new-session
-      }
     '';
   };
 
@@ -165,5 +140,4 @@
     keyMode = "vi";
     mouse = true;
   };
-
 }

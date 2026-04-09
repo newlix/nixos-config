@@ -1,14 +1,21 @@
 { config, pkgs, lib, inputs, ... }:
 
 {
-  imports = [ ../../home/packages.nix ];
+  imports = [
+    ../../home/packages.nix
+    ../../modules/services/samba.nix
+    ../../modules/services/backup.nix
+    ../../modules/desktop/niri.nix
+    ../../modules/services/keyd.nix
+  ];
+
   # ── Boot ───────────────────────────────────────────────────────────────────
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   # Keep last 5 NixOS generations in the boot menu
   boot.loader.systemd-boot.configurationLimit = 5;
 
-  boot.kernelPackages = pkgs.linuxPackages;  # LTS — avoids NVIDIA driver build failures on kernel bumps
+  boot.kernelPackages = pkgs.linuxPackages; # LTS — avoids NVIDIA driver build failures on kernel bumps
 
   # ── Networking ─────────────────────────────────────────────────────────────
   networking.hostName = "lab";
@@ -24,18 +31,8 @@
     type = "fcitx5";
     fcitx5.addons = with pkgs; [
       fcitx5-mcbopomofo
+      fcitx5-gtk
     ];
-  };
-
-  # ── Caps Lock → Ctrl+Space (keyd) ─────────────────────────────────────────
-  services.keyd = {
-    enable = true;
-    keyboards.default = {
-      ids = [ "*" ];
-      settings.main = {
-        capslock = "C-space";
-      };
-    };
   };
 
   # ── Fonts ──────────────────────────────────────────────────────────────────
@@ -51,22 +48,26 @@
   hardware.graphics.enable = true;
 
   nixpkgs.config.allowUnfree = true;
-  nixpkgs.config.permittedInsecurePackages = [
-    "openssl-1.1.1w"
-  ];
 
   # NVIDIA RTX 5070 Ti (GB203/Blackwell)
   services.xserver.videoDrivers = [ "nvidia" ];
   hardware.nvidia = {
     modesetting.enable = true;
-    open = true;                 # Blackwell mandatory: proprietary module lacks GB2xx support
+    open = true; # Blackwell mandatory: proprietary module lacks GB2xx support
 
     package = config.boot.kernelPackages.nvidiaPackages.stable;
     powerManagement.enable = false;
   };
 
   # ── CUDA ───────────────────────────────────────────────────────────────────
-  hardware.nvidia-container-toolkit.enable = true;  # nvidia-container-runtime for Docker
+  hardware.nvidia-container-toolkit.enable = true; # nvidia-container-runtime for Docker
+
+  # ── USB / Removable media ───────────────────────────────────────────────────
+  services.udisks2.enable = true;
+  # NTFS / exFAT support for USB drives
+  boot.supportedFilesystems = [ "ntfs" "exfat" ];
+  # polkit agent for non-root mount authorization
+  security.polkit.enable = true;
 
   # ── Docker ─────────────────────────────────────────────────────────────────
   virtualisation.docker = {
@@ -91,6 +92,9 @@
     settings = {
       experimental-features = [ "nix-command" "flakes" ];
       auto-optimise-store = true;
+      # Automatic GC when disk space is low
+      min-free = 5 * 1024 * 1024 * 1024; # 5GB
+      max-free = 20 * 1024 * 1024 * 1024; # 20GB
     };
     gc = {
       automatic = true;
@@ -129,10 +133,7 @@
     at-spi2-atk
     at-spi2-core
     libxkbcommon
-    libx11
     libxcursor
-    libxext
-    libxfixes
     libxi
     libxrender
     libxtst
@@ -145,135 +146,37 @@
 
   # ── Home Manager ───────────────────────────────────────────────────────────
   home-manager = {
-    useGlobalPkgs = true;    # reuse system nixpkgs, avoids a second eval
-    useUserPackages = true;  # install user packages to /etc/profiles
-    backupFileExtension = "bak";  # back up conflicting dotfiles instead of failing
+    useGlobalPkgs = true; # reuse system nixpkgs, avoids a second eval
+    useUserPackages = true; # install user packages to /etc/profiles
+    backupFileExtension = "bak"; # back up conflicting dotfiles instead of failing
     extraSpecialArgs = { inherit inputs; };
     users.newlix = import ./home.nix;
-  };
-
-  # ── Samba ──────────────────────────────────────────────────────────────────
-  services.samba = {
-    enable = true;
-    openFirewall = true;
-    settings = {
-      global = {
-        workgroup = "WORKGROUP";
-        "server role" = "standalone server";
-        # macOS (AFP over SMB) compatibility
-        "vfs objects"                            = "catia fruit streams_xattr";
-        "fruit:aapl"                             = "yes";
-        "fruit:copyfile"                         = "yes";
-        "fruit:model"                            = "MacSamba";
-        "fruit:metadata"                         = "stream";
-        "fruit:veto_appledouble"                 = "no";
-        "fruit:posix_rename"                     = "yes";
-        "fruit:wipe_intentionally_left_blank_rfork" = "yes";
-        "fruit:delete_empty_adfiles"             = "yes";
-        "map to guest"                           = "bad user";
-        "usershare allow guests"                 = "no";
-        # Disable SMB1 — macOS uses SMB2/3, SMB1 is a security risk
-        "server min protocol"                    = "SMB2";
-        "server signing"                         = "auto";
-        # Shared defaults for all shares
-        "create mask"        = "0700";
-        "directory mask"     = "0700";
-        "ea support"         = "yes";
-        "veto files"         = "/.DS_Store/.Spotlight-V100/.Trashes/.fseventsd/";
-        "delete veto files"  = "yes";
-      };
-      data = {
-        path = "/data";
-        browseable = "yes";
-        "read only" = "no";
-        "valid users" = "newlix";
-      };
-      newlix = {
-        path = "/home/newlix";
-        browseable = "yes";
-        "read only" = "no";
-        "valid users" = "newlix";
-      };
-      "115" = {
-        path = "/115";
-        browseable = "yes";
-        "read only" = "no";
-        "valid users" = "newlix";
-      };
-    };
-  };
-
-  # Avahi: mDNS for macOS to discover Samba shares via Bonjour
-  services.avahi = {
-    enable = true;
-    nssmdns4 = true;
-    publish = {
-      enable = true;
-      addresses = true;
-      workstation = true;
-    };
-  };
-
-  # ── btrbk ──────────────────────────────────────────────────────────────────
-  # Daily snapshots + send/receive backup to /backup (sdc)
-  services.btrbk.instances."backup" = {
-    onCalendar = "daily";
-    settings = {
-      snapshot_preserve_min = "2d";
-      snapshot_preserve     = "7d 4w";
-      target_preserve_min   = "no";
-      target_preserve       = "30d 10w 6m";
-
-      volume."/data" = {
-        snapshot_dir = "@snapshots";
-        subvolume = {
-          "@less".target   = "/backup";
-          "@more".target   = "/backup";
-          "@newlix".target = "/backup";
-        };
-      };
-    };
-  };
-
-  # Mount backup disk only during btrbk, unmount after to keep HDD spun down
-  systemd.services."btrbk-backup".serviceConfig = {
-    ExecStartPre = "-${pkgs.util-linux}/bin/mount /backup";
-    # ExecStopPost runs regardless of success/failure; '-' tolerates already-unmounted
-    ExecStopPost = "-${pkgs.util-linux}/bin/umount /backup";
   };
 
   # ── Steam ─────────────────────────────────────────────────────────────────
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true;
+    extraPackages = [ pkgs.gamescope ];
   };
+  programs.gamescope.enable = true;
 
-  # ── VNC (headless browser auth) ──────────────────────────────────────────
-  # Added to systemPackages for x11vnc etc.
-  environment.systemPackages = with pkgs; [
-    xorg-server
-    x11vnc
+  # Wrapper: bwrap in steam uses --chdir "$(pwd)" which fails if cwd
+  # is not bind-mounted into the sandbox (e.g. when launched from walker).
+  environment.systemPackages = [
+    (pkgs.writeShellScriptBin "steam-run" ''
+      cd "$HOME"
+      exec steam "$@"
+    '')
   ];
-
-  # ── Niri (Wayland compositor) ──────────────────────────────────────────────
-  programs.niri.enable = true;
-
-  # greetd login manager — auto-launches niri
-  services.greetd = {
-    enable = true;
-    settings.default_session = {
-      command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd niri-session";
-      user = "greeter";
-    };
-  };
-
-  # ── Swaylock ──────────────────────────────────────────────────────────────
-  security.pam.services.swaylock = {};
 
   # ── SSH ────────────────────────────────────────────────────────────────────
   services.openssh = {
     enable = true;
-    settings.PasswordAuthentication = false;
+    settings = {
+      PasswordAuthentication = true;
+      KbdInteractiveAuthentication = true;
+    };
   };
 
   # ── Tailscale ─────────────────────────────────────────────────────────────

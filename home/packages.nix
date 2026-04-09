@@ -1,5 +1,8 @@
 { config, lib, pkgs, ... }:
 
+let
+  scratch = import ../packages/scratch.nix { inherit pkgs; };
+in
 {
   # ── Shared system packages ────────────────────────────────────────────────
   environment.systemPackages = with pkgs; [
@@ -8,7 +11,6 @@
     curl wget
     fresh-editor
     vim
-    helix
     tmux
     htop
     ripgrep fd
@@ -27,10 +29,13 @@
     nixd           # LSP for Nix
     alejandra      # Nix formatter
   ] ++ lib.optionals pkgs.stdenv.isLinux [
-    psmisc
+    libfaketime
+    scanmem        # memory scanner (like Cheat Engine)
+    psmisc         # killall, fuser, pstree
+    adwaita-icon-theme
+    # VNC (headless browser auth)
     xorg-server  # Xvfb
     x11vnc
-    adwaita-icon-theme
   ];
 
   # ── Shared user packages (home-manager) ───────────────────────────────────
@@ -45,30 +50,27 @@
     go-tools # staticcheck
     sqlc
 
-    # Swift (macOS only)
-  ] ++ lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
-    swiftlint
-  ] ++ (with pkgs; [
-
     # Python
     uv
 
     # Node.js
     nodejs
+    pnpm
+    typescript-language-server
 
     # Backup
     restic
     rclone
 
-    # Editor
-    fresh-editor
-
+    # CLI tools
     yt-dlp
     jq
     btop
     ncdu
-  ]) ++ lib.optionals pkgs.stdenv.isLinux (with pkgs; [
-
+    bc
+  ] ++ lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
+    swiftlint
+  ] ++ lib.optionals pkgs.stdenv.isLinux (with pkgs; [
     # Niri ecosystem
     waybar
     foot
@@ -110,10 +112,13 @@
 
     # Music
     amberol
+    playerctl
 
     # Editor
     sublime4
     zed-editor
-    playerctl
+
+    # Notes
+    scratch
   ]);
 }

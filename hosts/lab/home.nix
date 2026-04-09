@@ -23,8 +23,8 @@
       autoload
     ];
     bindings = {
-      "Alt+LEFT" = "playlist-prev";
-      "Alt+RIGHT" = "playlist-next";
+      "Ctrl+LEFT" = "playlist-prev";
+      "Ctrl+RIGHT" = "playlist-next";
     };
     config = {
       osc = "yes";
@@ -78,7 +78,7 @@
     }
 
     spawn-at-startup "xwayland-satellite"
-    spawn-at-startup "waybar"
+    spawn-sh-at-startup "sleep 2 && { pkill waybar; waybar; }"
     spawn-at-startup "walker" "--gapplication-service"
     spawn-sh-at-startup "sleep 2 && mako"
 
@@ -105,7 +105,7 @@
         Mod+B { spawn "google-chrome-stable" "--new-window" "about:blank"; }
         Mod+G { spawn "google-chrome-stable" "--app=https://gemini.google.com"; }
         Super+Space { spawn "walker"; }
-        Super+Alt+L { spawn "swaylock"; }
+        Ctrl+Mod+Q { spawn "swaylock"; }
 
         XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+ -l 1.0"; }
         XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-"; }
@@ -121,9 +121,10 @@
         XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "10%-"; }
 
         Mod+O { toggle-overview; }
-        Mod+Shift+Q { close-window; }
+        Ctrl+Q { close-window; }
 
         Mod+Left  { focus-column-left; }
+
         Mod+Down  { focus-window-down; }
         Mod+Up    { focus-window-up; }
         Mod+Right { focus-column-right; }
@@ -216,13 +217,12 @@
         Mod+V       { toggle-window-floating; }
         Mod+Shift+V { switch-focus-between-floating-and-tiling; }
 
-        Mod+Shift+3 { screenshot-screen; }
-        Mod+Shift+4 { screenshot; }
-        Mod+Shift+5 { screenshot-window; }
+        Ctrl+Shift+3 { screenshot-screen; }
+        Ctrl+Shift+4 { screenshot; }
+        Ctrl+Shift+5 { screenshot-window; }
 
         Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
-        Mod+Shift+E { quit; }
-        Ctrl+Alt+Delete { quit; }
+        Ctrl+Shift+Q { quit; }
         Mod+Shift+P { power-off-monitors; }
     }
   '';
@@ -289,22 +289,23 @@
       };
 
       "custom/sysinfo" = {
-        exec = "while true; do cpu=$(awk '{u=$2+$4; t=$2+$4+$5; if(NR>1) printf \"%.0f\", (u-ou)/(t-ot)*100; ou=u; ot=t}' <(grep '^cpu ' /proc/stat) <(sleep 1; grep '^cpu ' /proc/stat)); mem=$(free | awk '/Mem/{printf \"%.0f\", $3/$2*100}'); temp=$(cat /sys/class/hwmon/hwmon4/temp1_input 2>/dev/null); temp=$((temp/1000)); echo \"CPU \${cpu}%  RAM \${mem}%  \${temp}°C\"; sleep 4; done";
-        return-type = "";
+        interval = 5;
+        exec = "echo \"CPU $(awk '{u=$2+$4; t=$2+$4+$5; if(NR>1) printf \"%.0f\", (u-ou)/(t-ot)*100; ou=u; ot=t}' <(grep '^cpu ' /proc/stat) <(sleep 0.5; grep '^cpu ' /proc/stat))%  RAM $(free | awk '/Mem/{printf \"%.0f\", $3/$2*100}')%  $(( $(cat /sys/class/hwmon/hwmon4/temp1_input 2>/dev/null || echo 0) / 1000 ))°C\"";
         tooltip = false;
         on-click = "foot -e btop";
       };
 
       "custom/netspeed" = {
-        exec = "rx0=0; tx0=0; while true; do read rx1 < /sys/class/net/eno1/statistics/rx_bytes 2>/dev/null || rx1=0; read tx1 < /sys/class/net/eno1/statistics/tx_bytes 2>/dev/null || tx1=0; if [ $rx0 -gt 0 ]; then rxs=$(( (rx1-rx0)/5 )); txs=$(( (tx1-tx0)/5 )); if [ $rxs -gt 1048576 ]; then rxf=$(printf '%5.1fM' $(echo \"scale=1; $rxs/1048576\" | bc)); elif [ $rxs -gt 1024 ]; then rxf=$(printf '%5dK' $(($rxs/1024))); else rxf=$(printf '%5dB' $rxs); fi; if [ $txs -gt 1048576 ]; then txf=$(printf '%5.1fM' $(echo \"scale=1; $txs/1048576\" | bc)); elif [ $txs -gt 1024 ]; then txf=$(printf '%5dK' $(($txs/1024))); else txf=$(printf '%5dB' $txs); fi; else rxf=$(printf '%5dB' 0); txf=$(printf '%5dB' 0); fi; rx0=$rx1; tx0=$tx1; echo \"▼\${rxf} ▲\${txf}\"; sleep 5; done";
-        return-type = "";
+        interval = 5;
+        exec = "rx0=$(cat /sys/class/net/eno1/statistics/rx_bytes 2>/dev/null); tx0=$(cat /sys/class/net/eno1/statistics/tx_bytes 2>/dev/null); sleep 1; rx1=$(cat /sys/class/net/eno1/statistics/rx_bytes 2>/dev/null); tx1=$(cat /sys/class/net/eno1/statistics/tx_bytes 2>/dev/null); rxs=$(( (rx1-rx0) )); txs=$(( (tx1-tx0) )); if [ $rxs -gt 1048576 ]; then rxf=$(printf '%5.1fM' $(echo \"scale=1; $rxs/1048576\" | bc)); elif [ $rxs -gt 1024 ]; then rxf=$(printf '%5dK' $(($rxs/1024))); else rxf=$(printf '%5dB' $rxs); fi; if [ $txs -gt 1048576 ]; then txf=$(printf '%5.1fM' $(echo \"scale=1; $txs/1048576\" | bc)); elif [ $txs -gt 1024 ]; then txf=$(printf '%5dK' $(($txs/1024))); else txf=$(printf '%5dB' $txs); fi; echo \"▼$rxf ▲$txf\"";
+        on-click = "foot -e sudo ${pkgs.bandwhich}/bin/bandwhich";
         tooltip = false;
       };
 
       "clock" = {
         format = "{:%a %b %d %I:%M %p}";
         tooltip-format = "<big>{:%Y %B}</big>\\n<tt><small>{calendar}</small></tt>";
-        interval = 1;
+        interval = 60;
         on-click = "google-chrome-stable --app=https://calendar.google.com";
       };
 
@@ -425,10 +426,23 @@
         font = "Hack:size=16";
         pad = "16x16";
         "underline-offset" = "4px";
-        "selection-target" = "clipboard";
+        "selection-target" = "both";
       };
       mouse = {
         hide-when-typing = "yes";
+      };
+      mouse-bindings = {
+        select-extend = "none";
+        primary-paste = "BTN_RIGHT";
+      };
+      # Mac 風格快捷鍵：keyd 把實體 Cmd 映射為 Ctrl，
+      # 這裡讓 foot 用 Ctrl+key 觸發對應動作。
+      # clipboard-copy 有選取時複製，無選取時 passthrough（送 SIGINT）
+      key-bindings = {
+        clipboard-copy = "Control+Shift+c";
+        clipboard-paste = "Control+Shift+v Control+v";
+        search-start = "Control+Shift+r Control+f";
+        spawn-terminal = "Control+Shift+n Control+n";
       };
       "colors-dark" = {
         background = "000000";
@@ -462,7 +476,255 @@
     MimeType=video/jpeg;video/mp4;video/mpeg;video/quicktime;video/x-ms-asf;video/x-ms-wmv;video/x-msvideo;video/x-flv;video/pascal;video/x-matroska;video/x-m4v;video/x-ogm+ogg;video/unknown;video/x-flic;video/x-theora+ogg;video/x-matroska-3d;
   '';
 
-  # ── Fcitx5 ────────────────────────────────────────────────────────────────
+  # ── XDG MIME Apps ────────────────────────────────────────────────────────
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = {
+      "text/plain" = [ "zed.desktop" ];
+      "text/markdown" = [ "zed.desktop" ];
+      "application/x-zerosize" = [ "zed.desktop" ]; # Empty files
+      "application/x-shellscript" = [ "zed.desktop" ];
+      "text/x-python" = [ "zed.desktop" ];
+      "text/x-go" = [ "zed.desktop" ];
+      "text/x-nix" = [ "zed.desktop" ];
+      "application/json" = [ "zed.desktop" ];
+
+      # Audio → Amberol
+      "audio/mpeg" = [ "io.bassi.Amberol.desktop" ];
+      "audio/flac" = [ "io.bassi.Amberol.desktop" ];
+      "audio/x-flac" = [ "io.bassi.Amberol.desktop" ];
+      "audio/ogg" = [ "io.bassi.Amberol.desktop" ];
+      "audio/x-vorbis+ogg" = [ "io.bassi.Amberol.desktop" ];
+      "audio/opus" = [ "io.bassi.Amberol.desktop" ];
+      "audio/aac" = [ "io.bassi.Amberol.desktop" ];
+      "audio/mp4" = [ "io.bassi.Amberol.desktop" ];
+      "audio/x-m4a" = [ "io.bassi.Amberol.desktop" ];
+      "audio/wav" = [ "io.bassi.Amberol.desktop" ];
+      "audio/x-wav" = [ "io.bassi.Amberol.desktop" ];
+      "audio/x-ms-wma" = [ "io.bassi.Amberol.desktop" ];
+    };
+  };
+
+  # ── Desktop Entries ─────────────────────────────────────────────────────
+  xdg.desktopEntries.steam = {
+    name = "Steam";
+    comment = "Application for managing and playing games on Steam";
+    exec = "steam-run %U";
+    icon = "steam";
+    categories = [ "Game" "Network" "FileTransfer" ];
+    terminal = false;
+    mimeType = [ "x-scheme-handler/steam" "x-scheme-handler/steamlink" ];
+    settings = {
+      # Steam's bwrap uses --chdir "$(pwd)"; walker's cwd may not exist
+      # inside the sandbox, so pin it to $HOME.
+      Path = "/home/newlix";
+      PrefersNonDefaultGPU = "true";
+      X-KDE-RunOnDiscreteGpu = "true";
+      StartupWMClass = "steam";
+    };
+  };
+
+  xdg.desktopEntries.zed = {
+    name = "Zed";
+    exec = "zeditor %F";
+    icon = "zed";
+    categories = [ "Development" "TextEditor" ];
+    terminal = false;
+    mimeType = [ "text/plain" "text/markdown" "application/json" ];
+  };
+
+  xdg.configFile."zed/themes/ir-black.json".text = builtins.toJSON {
+    "$schema" = "https://zed.dev/schema/themes/v0.2.0.json";
+    name = "IR Black";
+    author = "Todd Werth";
+    themes = [{
+      name = "IR Black";
+      appearance = "dark";
+      style = {
+        background = "#000000ff";
+        "editor.background" = "#000000ff";
+        "editor.foreground" = "#f6f3e8ff";
+        "editor.gutter.background" = "#000000ff";
+        "editor.line_number" = "#7c7c7cff";
+        "editor.active_line_number" = "#f6f3e8ff";
+        "editor.active_line.background" = "#1a1a1aff";
+        "editor.wrap_guide" = "#2a2a2aff";
+        "editor.indent_guide" = "#2a2a2aff";
+        "editor.indent_guide_active" = "#4e4e4eff";
+        border = "#333333ff";
+        "border.variant" = "#222222ff";
+        "border.focused" = "#96cbfeff";
+        "border.selected" = "#96cbfeff";
+        "border.transparent" = "#00000000";
+        "border.disabled" = "#333333ff";
+        "elevated_surface.background" = "#1a1a1aff";
+        "surface.background" = "#111111ff";
+        "element.background" = "#1a1a1aff";
+        "element.hover" = "#2a2a2aff";
+        "element.active" = "#333333ff";
+        "element.selected" = "#333333ff";
+        "element.disabled" = "#1a1a1aff";
+        "ghost_element.background" = "#00000000";
+        "ghost_element.hover" = "#2a2a2aff";
+        "ghost_element.active" = "#333333ff";
+        "ghost_element.selected" = "#333333ff";
+        "ghost_element.disabled" = "#1a1a1aff";
+        text = "#f6f3e8ff";
+        "text.muted" = "#7c7c7cff";
+        "text.placeholder" = "#4e4e4eff";
+        "text.disabled" = "#4e4e4eff";
+        "text.accent" = "#96cbfeff";
+        icon = "#f6f3e8ff";
+        "icon.muted" = "#7c7c7cff";
+        "icon.disabled" = "#4e4e4eff";
+        "icon.placeholder" = "#4e4e4eff";
+        "icon.accent" = "#96cbfeff";
+        "status_bar.background" = "#0a0a0aff";
+        "title_bar.background" = "#0a0a0aff";
+        "title_bar.inactive_background" = "#050505ff";
+        "toolbar.background" = "#000000ff";
+        "tab_bar.background" = "#0a0a0aff";
+        "tab.active_background" = "#1a1a1aff";
+        "tab.inactive_background" = "#0a0a0aff";
+        "search.match_background" = "#ffffb640";
+        "panel.background" = "#0a0a0aff";
+        "panel.focused_border" = "#96cbfeff";
+        "pane.focused_border" = "#96cbfeff";
+        "scrollbar.thumb.background" = "#333333aa";
+        "scrollbar.thumb.hover_background" = "#555555aa";
+        "scrollbar.thumb.border" = "#00000000";
+        "scrollbar.track.background" = "#00000000";
+        "scrollbar.track.border" = "#00000000";
+        "link_text.hover" = "#96cbfeff";
+        conflict = "#ff6c60ff";
+        "conflict.background" = "#ff6c6020";
+        "conflict.border" = "#ff6c60ff";
+        created = "#a8ff60ff";
+        "created.background" = "#a8ff6020";
+        "created.border" = "#a8ff60ff";
+        deleted = "#ff6c60ff";
+        "deleted.background" = "#ff6c6020";
+        "deleted.border" = "#ff6c60ff";
+        error = "#ff6c60ff";
+        "error.background" = "#ff6c6020";
+        "error.border" = "#ff6c60ff";
+        hidden = "#4e4e4eff";
+        "hidden.background" = "#0a0a0aff";
+        "hidden.border" = "#333333ff";
+        hint = "#7c7c7cff";
+        "hint.background" = "#0a0a0aff";
+        "hint.border" = "#333333ff";
+        ignored = "#4e4e4eff";
+        "ignored.background" = "#0a0a0aff";
+        "ignored.border" = "#333333ff";
+        info = "#96cbfeff";
+        "info.background" = "#96cbfe20";
+        "info.border" = "#96cbfeff";
+        modified = "#ffffb6ff";
+        "modified.background" = "#ffffb620";
+        "modified.border" = "#ffffb6ff";
+        predictive = "#4e4e4eff";
+        "predictive.background" = "#0a0a0aff";
+        "predictive.border" = "#333333ff";
+        renamed = "#96cbfeff";
+        "renamed.background" = "#96cbfe20";
+        "renamed.border" = "#96cbfeff";
+        success = "#a8ff60ff";
+        "success.background" = "#a8ff6020";
+        "success.border" = "#a8ff60ff";
+        unreachable = "#4e4e4eff";
+        "unreachable.background" = "#0a0a0aff";
+        "unreachable.border" = "#333333ff";
+        warning = "#ffffb6ff";
+        "warning.background" = "#ffffb620";
+        "warning.border" = "#ffffb6ff";
+        "terminal.background" = "#000000ff";
+        "terminal.foreground" = "#f6f3e8ff";
+        "terminal.bright_foreground" = "#ffffffff";
+        "terminal.dim_foreground" = "#7c7c7cff";
+        "terminal.ansi.black" = "#4e4e4eff";
+        "terminal.ansi.red" = "#ff6c60ff";
+        "terminal.ansi.green" = "#a8ff60ff";
+        "terminal.ansi.yellow" = "#ffffb6ff";
+        "terminal.ansi.blue" = "#96cbfeff";
+        "terminal.ansi.magenta" = "#ff73fdff";
+        "terminal.ansi.cyan" = "#c6c5feff";
+        "terminal.ansi.white" = "#eeeeeeff";
+        "terminal.ansi.bright_black" = "#7c7c7cff";
+        "terminal.ansi.bright_red" = "#ffb6b0ff";
+        "terminal.ansi.bright_green" = "#ceffabff";
+        "terminal.ansi.bright_yellow" = "#ffffcbff";
+        "terminal.ansi.bright_blue" = "#b5dcfeff";
+        "terminal.ansi.bright_magenta" = "#ff9cfeff";
+        "terminal.ansi.bright_cyan" = "#dfdffeff";
+        "terminal.ansi.bright_white" = "#ffffffff";
+        players = [
+          { cursor = "#f6f3e8ff"; background = "#96cbfeff"; selection = "#96cbfe40"; }
+          { cursor = "#a8ff60ff"; background = "#a8ff60ff"; selection = "#a8ff6040"; }
+          { cursor = "#ff73fdff"; background = "#ff73fdff"; selection = "#ff73fd40"; }
+          { cursor = "#ffffb6ff"; background = "#ffffb6ff"; selection = "#ffffb640"; }
+        ];
+        syntax = {
+          comment  = { color = "#7c7c7cff"; font_style = "italic"; };
+          string   = { color = "#a8ff60ff"; };
+          number   = { color = "#ff73fdff"; };
+          keyword  = { color = "#96cbfeff"; };
+          function = { color = "#ffffb6ff"; };
+          type     = { color = "#ffffb6ff"; };
+          variable = { color = "#f6f3e8ff"; };
+          constant = { color = "#ff6c60ff"; };
+          operator = { color = "#f6f3e8ff"; };
+          property = { color = "#c6c5feff"; };
+          attribute = { color = "#96cbfeff"; };
+          tag      = { color = "#96cbfeff"; };
+          label    = { color = "#ffffb6ff"; };
+          punctuation = { color = "#f6f3e8ff"; };
+          "punctuation.bracket" = { color = "#f6f3e8ff"; };
+          "punctuation.delimiter" = { color = "#f6f3e8ff"; };
+          "punctuation.special" = { color = "#ff73fdff"; };
+          "string.escape" = { color = "#ff73fdff"; };
+          "string.special" = { color = "#ff73fdff"; };
+          "string.regex" = { color = "#ff73fdff"; };
+          "variable.special" = { color = "#ff6c60ff"; };
+          "keyword.operator" = { color = "#f6f3e8ff"; };
+          boolean = { color = "#ff6c60ff"; };
+          "comment.doc" = { color = "#7c7c7cff"; font_style = "italic"; };
+          emphasis = { font_style = "italic"; };
+          "emphasis.strong" = { font_weight = 700; };
+          title = { color = "#ffffb6ff"; font_weight = 700; };
+          link_text = { color = "#96cbfeff"; };
+          link_uri = { color = "#a8ff60ff"; };
+        };
+      };
+    }];
+  };
+
+  xdg.configFile."zed/settings.json".text = ''
+    {
+      "base_keymap": "SublimeText",
+      "ui_font_size": 16,
+      "buffer_font_size": 15,
+      "buffer_font_family": "Hack",
+      "theme": {
+        "mode": "system",
+        "light": "IR Black",
+        "dark": "IR Black"
+      },
+      "autosave": "on_focus_change",
+      "scrollbar": {
+        "show": "never"
+      },
+      "ui_font_family": "Hack",
+      "format_on_save": "on",
+      "terminal": {
+        "font_family": "Hack",
+        "font_size": 14
+      }
+    }
+  '';
+
+  # ── Fcitx5 (McBopomofo) ────────────────────────────────────────────────────
+  # System-level i18n.inputMethod is in configuration.nix; only user config here.
   xdg.configFile."fcitx5/config".text = ''
     [Hotkey]
     EnumerateWithTriggerKeys=False
@@ -475,4 +737,7 @@
     ShareInputState=No
     DefaultPageSize=5
   '';
+
+  # ── USB automount ────────────────────────────────────────────────────────
+  services.udiskie.enable = true;
 }
