@@ -1,8 +1,5 @@
 { config, lib, pkgs, ... }:
 
-let
-  scratch = import ../packages/scratch.nix { inherit pkgs; };
-in
 {
   # ── Shared system packages ────────────────────────────────────────────────
   environment.systemPackages = with pkgs; [
@@ -14,8 +11,7 @@ in
     tmux
     htop
     ripgrep fd
-    file lsof
-    unzip zip
+    unzip zip unrar
 
     # Dev
     go
@@ -31,6 +27,7 @@ in
   ] ++ lib.optionals pkgs.stdenv.isLinux [
     libfaketime
     scanmem        # memory scanner (like Cheat Engine)
+    file lsof
     psmisc         # killall, fuser, pstree
     adwaita-icon-theme
     # VNC (headless browser auth)
@@ -67,10 +64,11 @@ in
     jq
     btop
     ncdu
-    bc
   ] ++ lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
     swiftlint
   ] ++ lib.optionals pkgs.stdenv.isLinux (with pkgs; [
+    bc
+
     # Niri ecosystem
     waybar
     foot
@@ -84,6 +82,7 @@ in
 
     # File manager
     nautilus
+    file-roller
     ffmpegthumbnailer
     gst_all_1.gst-plugins-base
     gst_all_1.gst-plugins-good
@@ -119,6 +118,6 @@ in
     zed-editor
 
     # Notes
-    scratch
+    (import ../packages/scratch.nix { inherit pkgs; })
   ]);
 }

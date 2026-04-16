@@ -58,9 +58,7 @@
         gaps 8
         center-focused-column "never"
         preset-column-widths {
-            proportion 0.33333
             proportion 0.5
-            proportion 0.66667
         }
         default-column-width { proportion 0.5; }
         focus-ring {
@@ -85,6 +83,11 @@
     prefer-no-csd
     screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 
+    // Render compositor on AMD iGPU, keep NVIDIA VRAM free for compute/gaming
+    debug {
+        render-drm-device "/dev/dri/by-path/pci-0000:0d:00.0-render"
+    }
+
     window-rule {
         match app-id=r#"^org\.wezfurlong\.wezterm$"#
         default-column-width {}
@@ -92,6 +95,10 @@
     window-rule {
         match app-id=r#"firefox$"# title="^Picture-in-Picture$"
         open-floating true
+    }
+    window-rule {
+        match app-id="dev.zed.Zed"
+        open-focused true
     }
     window-rule {
         geometry-corner-radius 8
@@ -209,10 +216,10 @@
         Mod+C { center-column; }
         Mod+Ctrl+C { center-visible-columns; }
 
-        Mod+Minus { set-column-width "-10%"; }
-        Mod+Equal { set-column-width "+10%"; }
-        Mod+Shift+Minus { set-window-height "-10%"; }
-        Mod+Shift+Equal { set-window-height "+10%"; }
+        // Mod+Minus { set-column-width "-10%"; }
+        // Mod+Equal { set-column-width "+10%"; }
+        // Mod+Shift+Minus { set-window-height "-10%"; }
+        // Mod+Shift+Equal { set-window-height "+10%"; }
 
         Mod+V       { toggle-window-floating; }
         Mod+Shift+V { switch-focus-between-floating-and-tiling; }
@@ -426,14 +433,14 @@
         font = "Hack:size=16";
         pad = "16x16";
         "underline-offset" = "4px";
-        "selection-target" = "both";
+        "selection-target" = "none";
       };
       mouse = {
         hide-when-typing = "yes";
       };
       mouse-bindings = {
         select-extend = "none";
-        primary-paste = "BTN_RIGHT";
+        primary-paste = "none";
       };
       # Mac 風格快捷鍵：keyd 把實體 Cmd 映射為 Ctrl，
       # 這裡讓 foot 用 Ctrl+key 觸發對應動作。
