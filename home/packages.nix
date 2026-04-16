@@ -6,12 +6,13 @@
     # Core tools
     git
     curl wget
+    fresh-editor
     vim
     helix
     tmux
     htop
     ripgrep fd
-    file lsof psmisc
+    file lsof
     unzip zip
 
     # Dev
@@ -22,13 +23,13 @@
     s3cmd
     zola
 
-    # VNC (headless browser auth)
-    xorg-server  # Xvfb
-    x11vnc
-
     # Nix tooling
     nixd           # LSP for Nix
     alejandra      # Nix formatter
+  ] ++ lib.optionals pkgs.stdenv.isLinux [
+    psmisc
+    xorg-server  # Xvfb
+    x11vnc
     adwaita-icon-theme
   ];
 
@@ -42,6 +43,7 @@
     gopls
     golangci-lint
     go-tools # staticcheck
+    sqlc
 
     # Swift (macOS only)
   ] ++ lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
@@ -57,6 +59,15 @@
     # Backup
     restic
     rclone
+
+    # Editor
+    fresh-editor
+
+    yt-dlp
+    jq
+    btop
+    ncdu
+  ]) ++ lib.optionals pkgs.stdenv.isLinux (with pkgs; [
 
     # Niri ecosystem
     waybar
@@ -101,14 +112,8 @@
     amberol
 
     # Editor
-    fresh-editor
     sublime4
     zed-editor
     playerctl
-
-    yt-dlp
-    jq
-    btop
-    ncdu
   ]);
 }

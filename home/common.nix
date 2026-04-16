@@ -3,8 +3,8 @@
 {
   programs.home-manager.enable = true;
 
-  # ── Pointer Cursor ────────────────────────────────────────────────────────
-  home.pointerCursor = {
+  # ── Pointer Cursor (Linux only) ───────────────────────────────────────────
+  home.pointerCursor = lib.mkIf pkgs.stdenv.isLinux {
     package = pkgs.adwaita-icon-theme;
     name    = "Adwaita";
     size    = 24;
@@ -124,6 +124,9 @@
       export PATH="$HOME/core/sh:$HOME/bin:$HOME/go/bin:$PATH"
 
       # macOS-only
+      if [[ "$(uname)" == "Darwin" ]]; then
+        export DOCKER_HOST="ssh://newlix@lab"
+      fi
       if [[ -d "/Applications/Sublime Text.app" ]]; then
         export PATH="/Applications/Sublime Text.app/Contents/SharedSupport/bin:$PATH"
       fi
