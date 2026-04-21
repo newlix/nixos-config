@@ -8,13 +8,13 @@
     curl wget
     fresh-editor
     vim
+    helix
     tmux
     htop
     ripgrep fd
     unzip zip unrar
 
     # Dev
-    go
     gcc
     gnumake
     bash-completion
@@ -91,7 +91,6 @@
     gst_all_1.gst-libav
     gst_all_1.gst-vaapi
     papirus-icon-theme
-    dconf
 
     # Image viewer
     loupe
@@ -106,16 +105,11 @@
     xwayland-satellite
 
     # Notifications
-    mako
     libnotify
 
     # Music
     amberol
     playerctl
-
-    # Editor
-    sublime4
-    zed-editor
 
     # Notes
     (import ../packages/scratch.nix { inherit pkgs; })

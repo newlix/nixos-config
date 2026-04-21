@@ -62,7 +62,11 @@
   # ── CUDA ───────────────────────────────────────────────────────────────────
   hardware.nvidia-container-toolkit.enable = true; # nvidia-container-runtime for Docker
 
+  # ── GNOME settings backend (for Nautilus / GTK apps) ─────────────────────
+  programs.dconf.enable = true;
+
   # ── USB / Removable media ───────────────────────────────────────────────────
+  services.gvfs.enable = true; # trash, MTP, network mounts for Nautilus
   services.udisks2.enable = true;
   # NTFS / exFAT support for USB drives
   boot.supportedFilesystems = [ "ntfs" "exfat" ];

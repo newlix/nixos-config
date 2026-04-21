@@ -76,9 +76,7 @@
     }
 
     spawn-at-startup "xwayland-satellite"
-    spawn-sh-at-startup "sleep 2 && { pkill waybar; waybar; }"
     spawn-at-startup "walker" "--gapplication-service"
-    spawn-sh-at-startup "sleep 2 && mako"
 
     prefer-no-csd
     screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
@@ -237,6 +235,7 @@
   # ── waybar ─────────────────────────────────────────────────────────────────
   programs.waybar = {
     enable = true;
+    systemd.enable = true;
     settings = [{
       layer = "top";
       position = "top";
@@ -540,7 +539,30 @@
     mimeType = [ "text/plain" "text/markdown" "application/json" ];
   };
 
-  xdg.configFile."zed/themes/ir-black.json".text = builtins.toJSON {
+  programs.zed-editor = {
+    enable = true;
+
+    userSettings = {
+      base_keymap = "SublimeText";
+      ui_font_size = 16;
+      buffer_font_size = 15;
+      buffer_font_family = "Hack";
+      theme = {
+        mode = "system";
+        light = "IR Black";
+        dark = "IR Black";
+      };
+      autosave = "on_focus_change";
+      scrollbar.show = "never";
+      ui_font_family = "Hack";
+      format_on_save = "on";
+      terminal = {
+        font_family = "Hack";
+        font_size = 14;
+      };
+    };
+
+    themes.ir-black = {
     "$schema" = "https://zed.dev/schema/themes/v0.2.0.json";
     name = "IR Black";
     author = "Todd Werth";
@@ -704,31 +726,8 @@
         };
       };
     }];
+    };
   };
-
-  xdg.configFile."zed/settings.json".text = ''
-    {
-      "base_keymap": "SublimeText",
-      "ui_font_size": 16,
-      "buffer_font_size": 15,
-      "buffer_font_family": "Hack",
-      "theme": {
-        "mode": "system",
-        "light": "IR Black",
-        "dark": "IR Black"
-      },
-      "autosave": "on_focus_change",
-      "scrollbar": {
-        "show": "never"
-      },
-      "ui_font_family": "Hack",
-      "format_on_save": "on",
-      "terminal": {
-        "font_family": "Hack",
-        "font_size": 14
-      }
-    }
-  '';
 
   # ── Fcitx5 (McBopomofo) ────────────────────────────────────────────────────
   # System-level i18n.inputMethod is in configuration.nix; only user config here.
@@ -747,4 +746,10 @@
 
   # ── USB automount ────────────────────────────────────────────────────────
   services.udiskie.enable = true;
+
+  # ── Notifications ────────────────────────────────────────────────────────
+  services.mako.enable = true;
+
+  # ── GNOME keyring (Chrome passwords, SSH/GPG passphrases) ────────────────
+  services.gnome-keyring.enable = true;
 }

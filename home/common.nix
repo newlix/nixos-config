@@ -43,7 +43,6 @@
       EDITOR   = "vi";
       VISUAL   = if pkgs.stdenv.isDarwin then "subl -w" else "vi";
       MANPAGER = "less -X";
-      GOPATH   = "$HOME/go";
       LANG     = "en_US.UTF-8";
       LC_ALL   = "en_US.UTF-8";
       HISTTIMEFORMAT = "%F %T  ";
@@ -53,7 +52,7 @@
       grep = "grep --color=auto";
       yt-dlp-audio = "yt-dlp -f 'bestaudio' -x --audio-format opus";
       yt-dlp-video = "yt-dlp -S ext:mp4:m4a";
-      cl = "claude --dangerously-skip-permissions";
+      cl = "npx @anthropic-ai/claude-code@latest --dangerously-skip-permissions";
     } // (if pkgs.stdenv.isDarwin then {
       ls = "ls -G";
       ll = "ls -lahG";
@@ -129,6 +128,12 @@
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
+  };
+
+  # ── Go ─────────────────────────────────────────────────────────────────────
+  programs.go = {
+    enable = true;
+    goPath = "go";
   };
 
   # ── tmux ───────────────────────────────────────────────────────────────────
