@@ -55,10 +55,12 @@
 
     taps = [
       "peripheryapp/periphery"
+      "cockroachdb/tap"
     ];
 
     brews = [
       "periphery"
+      "cockroach"
     ];
 
     casks = [
