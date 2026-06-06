@@ -54,6 +54,12 @@
         }
     }
 
+    gestures {
+        hot-corners {
+            off
+        }
+    }
+
     layout {
         gaps 8
         center-focused-column "never"
@@ -110,7 +116,7 @@
         Mod+B { spawn "google-chrome-stable" "--new-window" "about:blank"; }
         Mod+G { spawn "google-chrome-stable" "--app=https://gemini.google.com"; }
         Super+Space { spawn "walker"; }
-        Ctrl+Mod+Q { spawn "swaylock"; }
+        Ctrl+Mod+Q { spawn "wlogout" "-b" "5" "-T" "480" "-B" "480" "-L" "300" "-R" "300"; }
 
         XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+ -l 1.0"; }
         XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-"; }
@@ -245,9 +251,6 @@
 
       modules-left = [
         "custom/lock"
-        "custom/files"
-        "custom/chrome"
-        "custom/gemini"
         "niri/workspaces"
       ];
 
@@ -269,29 +272,7 @@
       };
 
       "niri/workspaces" = {
-        format = "{icon}";
-        format-icons = {
-          "1" = "play";
-          "2" = "main";
-        };
-      };
-
-      "custom/gemini" = {
-        format = "Gemini";
-        tooltip = false;
-        on-click = "google-chrome-stable --app=https://gemini.google.com";
-      };
-
-      "custom/chrome" = {
-        format = "Chrome";
-        tooltip = false;
-        on-click = "google-chrome-stable --new-window about:blank";
-      };
-
-      "custom/files" = {
-        format = "Files";
-        tooltip = false;
-        on-click = "nautilus --new-window";
+        format = "{value}";
       };
 
       "custom/sysinfo" = {
@@ -328,7 +309,7 @@
       "custom/lock" = {
         format = "⏻";
         tooltip = false;
-        on-click = "swaylock";
+        on-click = "wlogout -b 5 -T 480 -B 480 -L 300 -R 300";
       };
     }];
 
@@ -371,9 +352,6 @@
 
       /* All modules */
       #custom-lock,
-      #custom-files,
-      #custom-chrome,
-      #custom-gemini,
       #custom-sysinfo,
       #custom-netspeed,
       #clock,
@@ -385,9 +363,6 @@
 
       /* Hover */
       #custom-lock:hover,
-      #custom-files:hover,
-      #custom-chrome:hover,
-      #custom-gemini:hover,
       #custom-sysinfo:hover,
       #custom-netspeed:hover,
       #clock:hover,
@@ -421,6 +396,53 @@
         border-radius: 8px;
         font-size: 12px;
       }
+    '';
+  };
+
+  # ── wlogout (power menu) ────────────────────────────────────────────────────
+  programs.wlogout = {
+    enable = true;
+    layout = [
+      { label = "lock";     action = "swaylock";          text = "";  keybind = "l"; }
+      { label = "logout";   action = "niri msg action quit --skip-confirmation"; text = ""; keybind = "e"; }
+      { label = "suspend";  action = "systemctl suspend";  text = "";  keybind = "s"; }
+      { label = "reboot";   action = "systemctl reboot";   text = "";  keybind = "r"; }
+      { label = "shutdown"; action = "systemctl poweroff"; text = "";  keybind = "p"; }
+    ];
+    style = ''
+      * {
+        box-shadow: none;
+      }
+
+      window {
+        background-color: rgba(20, 20, 22, 0.6);
+      }
+
+      button {
+        color: #ffffff;
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        border-radius: 20px;
+        margin: 12px;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 32%;
+        transition: background-color 0.15s ease, border-color 0.15s ease;
+      }
+
+      button:focus,
+      button:hover,
+      button:active {
+        background-color: rgba(255, 255, 255, 0.14);
+        border-color: rgba(255, 255, 255, 0.28);
+        outline: none;
+      }
+
+      #lock     { background-image: image(url("${pkgs.wlogout}/share/wlogout/icons/lock.png")); }
+      #logout   { background-image: image(url("${pkgs.wlogout}/share/wlogout/icons/logout.png")); }
+      #suspend  { background-image: image(url("${pkgs.wlogout}/share/wlogout/icons/suspend.png")); }
+      #reboot   { background-image: image(url("${pkgs.wlogout}/share/wlogout/icons/reboot.png")); }
+      #shutdown { background-image: image(url("${pkgs.wlogout}/share/wlogout/icons/shutdown.png")); }
     '';
   };
 
@@ -475,12 +497,26 @@
 
 
   # ── ffmpegthumbnailer (Borderless & High Quality) ────────────────────────
+  # Nautilus runs thumbnailers inside a bwrap sandbox that only exposes
+  # /nix/store, so the Exec path must be an absolute store path. MimeType
+  # must be a superset of the package's bundled .thumbnailer so this
+  # override wins for every video type — otherwise the system entry runs
+  # with -f and adds the filmstrip border.
   xdg.dataFile."thumbnailers/ffmpegthumbnailer.thumbnailer".text = ''
     [Thumbnailer Entry]
-    TryExec=ffmpegthumbnailer
-    Exec=ffmpegthumbnailer -i %i -o %o -s %s -q 10
-    MimeType=video/jpeg;video/mp4;video/mpeg;video/quicktime;video/x-ms-asf;video/x-ms-wmv;video/x-msvideo;video/x-flv;video/pascal;video/x-matroska;video/x-m4v;video/x-ogm+ogg;video/unknown;video/x-flic;video/x-theora+ogg;video/x-matroska-3d;
+    TryExec=${pkgs.ffmpegthumbnailer}/bin/ffmpegthumbnailer
+    Exec=${pkgs.ffmpegthumbnailer}/bin/ffmpegthumbnailer -i %i -o %o -s %s -q 10
+    MimeType=video/3gpp;video/3gpp2;video/annodex;video/dv;video/isivideo;video/jpeg;video/mj2;video/mp2t;video/mp4;video/mpeg;video/ogg;video/quicktime;video/unknown;video/vnd.avi;video/vnd.mpegurl;video/vnd.radgamettools.bink;video/vnd.radgamettools.smacker;video/vnd.rn-realvideo;video/vnd.vivo;video/vnd.youtube.yt;video/wavelet;video/webm;video/x-anim;video/x-flic;video/x-flv;video/x-javafx;video/x-m4v;video/x-matroska;video/x-matroska-3d;video/x-mjpeg;video/x-mng;video/x-ms-asf;video/x-ms-wmv;video/x-msvideo;video/x-nsv;video/x-ogm+ogg;video/x-sgi-movie;video/x-theora+ogg;application/mxf;application/vnd.ms-asf;application/vnd.rn-realmedia;application/x-matroska;application/ogg;
   '';
+
+  # Nautilus default thumbnail-limit is ~10 MB, which silently skips most
+  # videos. Lift the cap and force thumbnails for local files.
+  dconf.settings = {
+    "org/gnome/nautilus/preferences" = {
+      show-image-thumbnails = "always";
+      thumbnail-limit = lib.hm.gvariant.mkUint64 4096;
+    };
+  };
 
   # ── XDG MIME Apps ────────────────────────────────────────────────────────
   xdg.mimeApps = {
@@ -508,6 +544,21 @@
       "audio/wav" = [ "io.bassi.Amberol.desktop" ];
       "audio/x-wav" = [ "io.bassi.Amberol.desktop" ];
       "audio/x-ms-wma" = [ "io.bassi.Amberol.desktop" ];
+
+      # Images → Loupe
+      "image/jpeg" = [ "org.gnome.Loupe.desktop" ];
+      "image/png" = [ "org.gnome.Loupe.desktop" ];
+      "image/gif" = [ "org.gnome.Loupe.desktop" ];
+      "image/webp" = [ "org.gnome.Loupe.desktop" ];
+      "image/bmp" = [ "org.gnome.Loupe.desktop" ];
+      "image/tiff" = [ "org.gnome.Loupe.desktop" ];
+      "image/svg+xml" = [ "org.gnome.Loupe.desktop" ];
+      "image/heif" = [ "org.gnome.Loupe.desktop" ];
+      "image/heic" = [ "org.gnome.Loupe.desktop" ];
+      "image/avif" = [ "org.gnome.Loupe.desktop" ];
+      "image/x-portable-pixmap" = [ "org.gnome.Loupe.desktop" ];
+      "image/x-portable-graymap" = [ "org.gnome.Loupe.desktop" ];
+      "image/x-portable-bitmap" = [ "org.gnome.Loupe.desktop" ];
     };
   };
 

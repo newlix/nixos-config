@@ -52,7 +52,8 @@
       grep = "grep --color=auto";
       yt-dlp-audio = "yt-dlp -f 'bestaudio' -x --audio-format opus";
       yt-dlp-video = "yt-dlp -S ext:mp4:m4a";
-      cl = "npx @anthropic-ai/claude-code@latest --dangerously-skip-permissions";
+      cl = "npx @anthropic-ai/claude-code@latest --dangerously-skip-permissions --rc";
+      gemini = "npx @google/gemini-cli -y";
     } // (if pkgs.stdenv.isDarwin then {
       ls = "ls -G";
       ll = "ls -lahG";
@@ -136,7 +137,7 @@
   # ── Go ─────────────────────────────────────────────────────────────────────
   programs.go = {
     enable = true;
-    goPath = "go";
+    env.GOPATH = "go";
   };
 
   # ── tmux ───────────────────────────────────────────────────────────────────

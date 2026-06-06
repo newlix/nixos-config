@@ -6,12 +6,11 @@
     keyboards.default = {
       ids = [ "*" ];
       settings.main = {
-        # Command → Ctrl（App 快捷鍵）
+        # Command ↔ Ctrl 互換
         leftmeta = "leftcontrol";
         rightmeta = "rightcontrol";
-        # Option → Super（Niri Mod 鍵）
-        leftalt = "leftmeta";
-        rightalt = "rightmeta";
+        leftcontrol = "leftmeta";
+        rightcontrol = "rightmeta";
         # Caps Lock → Ctrl+Space（輸入法切換）
         capslock = "C-space";
       };

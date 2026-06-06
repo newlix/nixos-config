@@ -65,6 +65,21 @@
   # ── GNOME settings backend (for Nautilus / GTK apps) ─────────────────────
   programs.dconf.enable = true;
 
+  # Nautilus draws a hardcoded filmstrip overlay on video thumbnails using the
+  # embedded src/resources/image/filmholes.png resource. Replace it with a 1x1
+  # transparent PNG before the gresource bundle is built.
+  nixpkgs.overlays = [
+    (final: prev: {
+      nautilus = prev.nautilus.overrideAttrs (old: {
+        postPatch = (old.postPatch or "") + ''
+          base64 -d > src/resources/image/filmholes.png <<'PNG'
+          iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkAAIAAAoAAv/lxKUAAAAASUVORK5CYII=
+          PNG
+        '';
+      });
+    })
+  ];
+
   # ── USB / Removable media ───────────────────────────────────────────────────
   services.gvfs.enable = true; # trash, MTP, network mounts for Nautilus
   services.udisks2.enable = true;
@@ -84,7 +99,7 @@
     isNormalUser = true;
     uid = 1000;
     shell = pkgs.bash;
-    extraGroups = [ "wheel" "networkmanager" "video" "audio" "docker" ];
+    extraGroups = [ "wheel" "networkmanager" "video" "audio" "docker" "input" ];
     home = "/home/newlix";
   };
 
@@ -164,6 +179,9 @@
     extraPackages = [ pkgs.gamescope ];
   };
   programs.gamescope.enable = true;
+
+  # Enable joycond for Nintendo Switch controllers
+  services.joycond.enable = true;
 
   # Wrapper: bwrap in steam uses --chdir "$(pwd)" which fails if cwd
   # is not bind-mounted into the sandbox (e.g. when launched from walker).
