@@ -49,6 +49,9 @@
       autoUpdate = true;
       upgrade = true;
       cleanup = "uninstall";  # remove formulae/casks not listed here
+      # Newer Homebrew refuses `brew bundle --cleanup` without explicit
+      # confirmation; perform the cleanup non-interactively during activation.
+      extraFlags = [ "--force-cleanup" ];
     };
 
     masApps = { };
