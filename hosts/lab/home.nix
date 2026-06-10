@@ -113,7 +113,7 @@
         Mod+Shift+Slash { show-hotkey-overlay; }
         Mod+T { spawn "foot"; }
         Mod+E { spawn "nautilus" "--new-window"; }
-        Mod+B { spawn "zen-beta" "--new-window" "about:blank"; }
+        Mod+B { spawn "zen-beta" "--new-window" "about:newtab"; }
         Mod+G { spawn "google-chrome-stable" "--app=https://gemini.google.com"; }
         Super+Space { spawn "walker"; }
         Ctrl+Mod+Q { spawn "wlogout" "-b" "5" "-T" "480" "-B" "480" "-L" "300" "-R" "300"; }
