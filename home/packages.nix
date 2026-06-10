@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, inputs, ... }:
 
 {
   # ── Shared system packages ────────────────────────────────────────────────
@@ -78,6 +78,7 @@
 
     # Browser
     google-chrome
+    inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
 
     # File manager
     nautilus
