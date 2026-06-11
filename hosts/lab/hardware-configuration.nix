@@ -1,6 +1,6 @@
 # Generated from hardware scan of lab (Debian → NixOS migration)
 # CPU: AMD Ryzen 7 7700 | GPU: NVIDIA RTX 5070 Ti (GB203/Blackwell) + AMD Raphael iGPU
-# Disks: sdb=465G (boot/root/swap), sda=1.8T (/115), btrfs (2x NVMe 2TB, data=single metadata=raid1)
+# Disks: sdb=465G (boot/root/swap), btrfs data pool = 2x NVMe 2TB + sda Crucial MX500 2TB SATA SSD (data=single metadata=raid1)
 { config, lib, pkgs, modulesPath, ... }:
 
 {
@@ -29,20 +29,16 @@
     options = [ "fmask=0077" "dmask=0077" "umask=0077" ];
   };
 
-  fileSystems."/115" = {
-    device = "/dev/disk/by-uuid/a6c40e89-ee46-45e7-9d53-0b08d7c808e4";
-    fsType = "xfs";
-    options = [ "noatime" ];
-  };
-
   swapDevices = [
     { device = "/dev/disk/by-uuid/9b6b038a-ff12-46b2-8447-4f793b4a2c53"; }
   ];
 
   # ── btrfs ──────────────────────────────────────────────────────────────────
-  # Two Crucial CT2000T500SSD8 NVMe drives in a single btrfs filesystem.
-  # data=single (spans both, ~3.6T usable), metadata=raid1 (mirrored).
+  # btrfs data pool: 2x Crucial CT2000T500SSD8 NVMe + 1x Crucial MX500 2TB SATA SSD.
+  # data=single (spans all devices, ~5.4T usable), metadata=raid1 (mirrored).
   # /data is top-level (btrbk uses it as volume root for @snapshots).
+  # NOTE: sda is a btrfs member via `btrfs device add` (stored in fs metadata, not
+  # fstab) — the /data mount by-uuid auto-assembles all 3 devices at boot.
   boot.supportedFilesystems = [ "btrfs" ];
 
   # Top-level mount — @less, @more, @newlix, @snapshots visible under /data/

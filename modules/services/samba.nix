@@ -55,12 +55,6 @@
         "read only" = "no";
         "valid users" = "newlix";
       };
-      "115" = {
-        path = "/115";
-        browseable = "yes";
-        "read only" = "no";
-        "valid users" = "newlix";
-      };
     };
   };
 
