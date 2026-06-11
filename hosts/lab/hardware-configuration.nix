@@ -54,6 +54,22 @@
     options = [ "subvol=@newlix" "noatime" "compress=zstd" "discard=async" ];
   };
 
+  # Curated, backed-up subvolumes mounted into the (unbacked) @newlix home.
+  # Only @dotfiles + @github are sent to /backup (see backup.nix); the rest of
+  # home (caches, models, playground, …) is regenerable and not backed up.
+  # @dotfiles also holds the live ssh/gnupg keys (symlinked from ~ via link.sh).
+  fileSystems."/home/newlix/dotfiles" = {
+    device = "/dev/disk/by-uuid/28d67838-6253-49c4-b6ff-7804faf474f5";
+    fsType = "btrfs";
+    options = [ "subvol=@dotfiles" "noatime" "compress=zstd" "discard=async" ];
+  };
+
+  fileSystems."/home/newlix/github" = {
+    device = "/dev/disk/by-uuid/28d67838-6253-49c4-b6ff-7804faf474f5";
+    fsType = "btrfs";
+    options = [ "subvol=@github" "noatime" "compress=zstd" "discard=async" ];
+  };
+
   # ── Backup disk ────────────────────────────────────────────────────────────
   # sdc: WDC WD6004FRYZ 5.5T — btrfs for btrbk send/receive targets
   fileSystems."/backup" = {
