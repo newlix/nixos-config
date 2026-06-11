@@ -4,11 +4,23 @@
   # ── Samba ──────────────────────────────────────────────────────────────────
   services.samba = {
     enable = true;
-    openFirewall = true;
+    # Do NOT open to the whole LAN/WAN. Firewall is opened only on tailscale0 below.
+    openFirewall = false;
+    # nmbd = NetBIOS broadcast (SMB1-era) — cannot run on the point-to-point
+    # tailscale0 interface and isn't needed (macOS discovers shares via Avahi/Bonjour).
+    # winbindd is unused on a standalone server with local users.
+    nmbd.enable = false;
+    winbindd.enable = false;
     settings = {
       global = {
         workgroup = "WORKGROUP";
         "server role" = "standalone server";
+        # Exposure is controlled by the firewall below: 445/139 are opened ONLY on
+        # tailscale0, so LAN/public packets to SMB are dropped by nftables even
+        # though smbd listens on all interfaces. ("bind interfaces only" is not used
+        # because smbd refuses to bind the point-to-point tailscale0 interface.)
+        # (Incident 2026-06-11: SMB was exposed via openFirewall and hit by
+        # WantToCry ransomware through the writable shares.)
         # macOS (AFP over SMB) compatibility
         "vfs objects"                            = "catia fruit streams_xattr";
         "fruit:aapl"                             = "yes";
@@ -50,6 +62,12 @@
         "valid users" = "newlix";
       };
     };
+  };
+
+  # Open SMB ports ONLY on the Tailscale interface, never on the LAN/public NIC.
+  networking.firewall.interfaces.tailscale0 = {
+    allowedTCPPorts = [ 139 445 ];
+    allowedUDPPorts = [ 137 138 ];
   };
 
   # Avahi: mDNS for macOS to discover Samba shares via Bonjour
