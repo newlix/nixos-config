@@ -70,6 +70,15 @@
     options = [ "subvol=@github" "noatime" "compress=zstd" "discard=async" ];
   };
 
+  # BT downloads — @115 subvolume. nodatacow is set on the subvol via `chattr +C`
+  # (not a mount option, which is unreliable for a secondary subvol mount) to
+  # avoid btrfs fragmentation. Not in the btrbk backup set.
+  fileSystems."/115" = {
+    device = "/dev/disk/by-uuid/28d67838-6253-49c4-b6ff-7804faf474f5";
+    fsType = "btrfs";
+    options = [ "subvol=@115" "noatime" "discard=async" ];
+  };
+
   # ── Backup disk ────────────────────────────────────────────────────────────
   # sdc: WDC WD6004FRYZ 5.5T — btrfs for btrbk send/receive targets
   fileSystems."/backup" = {
