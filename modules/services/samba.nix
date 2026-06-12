@@ -4,7 +4,7 @@
   # ── Samba ──────────────────────────────────────────────────────────────────
   services.samba = {
     enable = true;
-    # Do NOT open to the whole LAN/WAN. Firewall is opened only on tailscale0 below.
+    # Firewall (below) admits SMB from Tailscale + the LAN subnet only — never WAN.
     openFirewall = false;
     # nmbd = NetBIOS broadcast (SMB1-era) — cannot run on the point-to-point
     # tailscale0 interface and isn't needed (macOS discovers shares via Avahi/Bonjour).
@@ -15,12 +15,12 @@
       global = {
         workgroup = "WORKGROUP";
         "server role" = "standalone server";
-        # Exposure is controlled by the firewall below: 445/139 are opened ONLY on
-        # tailscale0, so LAN/public packets to SMB are dropped by nftables even
-        # though smbd listens on all interfaces. ("bind interfaces only" is not used
-        # because smbd refuses to bind the point-to-point tailscale0 interface.)
-        # (Incident 2026-06-11: SMB was exposed via openFirewall and hit by
-        # WantToCry ransomware through the writable shares.)
+        # Exposure is controlled by the firewall below: smbd listens on all
+        # interfaces, but the firewall only admits SMB from tailscale0 and the LAN
+        # subnet (192.168.0.0/24) — WAN sources are dropped. ("bind interfaces only"
+        # is not used because smbd refuses to bind the point-to-point tailscale0.)
+        # (Incident 2026-06-11: SMB was WAN-exposed via openFirewall and hit by
+        # WantToCry ransomware through the writable shares — hence source-scoping.)
         # macOS (AFP over SMB) compatibility
         "vfs objects"                            = "catia fruit streams_xattr";
         "fruit:aapl"                             = "yes";
@@ -58,11 +58,24 @@
     };
   };
 
-  # Open SMB ports ONLY on the Tailscale interface, never on the LAN/public NIC.
+  # SMB reachability:
+  #  - Tailscale (always): open 445/139 on the tailscale0 interface.
+  #  - LAN 192.168.0.0/24: admitted by SOURCE SUBNET via the iptables rules below,
+  #    NOT by opening the eno1 interface — so even if the router ever port-forwards
+  #    445, WAN-sourced packets (source outside 192.168.0.0/24) are still dropped.
+  #    (After the 2026-06-11 WantToCry incident, SMB must never be WAN-reachable.)
   networking.firewall.interfaces.tailscale0 = {
     allowedTCPPorts = [ 139 445 ];
     allowedUDPPorts = [ 137 138 ];
   };
+  networking.firewall.extraCommands = ''
+    iptables -I nixos-fw -p tcp -s 192.168.0.0/24 -m multiport --dports 139,445 -j nixos-fw-accept
+    iptables -I nixos-fw -p udp -s 192.168.0.0/24 -m multiport --dports 137,138 -j nixos-fw-accept
+  '';
+  networking.firewall.extraStopCommands = ''
+    iptables -D nixos-fw -p tcp -s 192.168.0.0/24 -m multiport --dports 139,445 -j nixos-fw-accept || true
+    iptables -D nixos-fw -p udp -s 192.168.0.0/24 -m multiport --dports 137,138 -j nixos-fw-accept || true
+  '';
 
   # Avahi: mDNS for macOS to discover Samba shares via Bonjour
   services.avahi = {
