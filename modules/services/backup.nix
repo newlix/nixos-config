@@ -9,10 +9,10 @@
       snapshot_preserve_min = "2d";
       snapshot_preserve     = "7d 4w";
       target_preserve_min   = "latest";
-      # Shortened from "30d 10w 6m": the old monthly tier pinned large churning
-      # @newlix cache snapshots and filled /backup (5.5T). Regenerable caches are
-      # now excluded via nested subvolumes (see hardware-configuration.nix / home).
-      target_preserve       = "14d 8w 3m";
+      # Keep it simple: 7 daily + 4 weekly (~1 month), no monthly tier — matches
+      # the local snapshot_preserve. The old "30d 10w 6m" monthly tier pinned
+      # large churning snapshots and filled /backup (5.5T).
+      target_preserve       = "7d 4w";
 
       volume."/data" = {
         snapshot_dir = "@snapshots";
