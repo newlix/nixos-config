@@ -87,7 +87,7 @@
       "utm"
       "vnc-viewer"
       "zed"
-      "zen"
+
     ];
   };
 

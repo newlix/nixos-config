@@ -1,6 +1,44 @@
 { config, pkgs, ... }:
 
 {
+  # ── restic → pCloud ────────────────────────────────────────────────────────
+  # Secrets (root:root 0600, NOT in git or the nix store):
+  #   /etc/secrets/rclone.conf             - rclone OAuth token for pCloud
+  #   /etc/secrets/restic-pcloud.password  - restic repository passphrase
+  #
+  # First-time setup:
+  #   1. nix-shell -p rclone
+  #      rclone config  →  name: pcloud, type: pcloud, US endpoint (api.pcloud.com)
+  #      cp ~/.config/rclone/rclone.conf /etc/secrets/rclone.conf
+  #      chmod 600 /etc/secrets/rclone.conf
+  #   2. openssl rand -base64 32 > /etc/secrets/restic-pcloud.password
+  #      chmod 600 /etc/secrets/restic-pcloud.password
+  #   3. restic -r rclone:pcloud:restic-lab \
+  #        --rclone-args "--config /etc/secrets/rclone.conf" \
+  #        -p /etc/secrets/restic-pcloud.password init
+  environment.systemPackages = [ pkgs.rclone ];
+
+  services.restic.backups.pcloud = {
+    repository    = "rclone:pcloud:restic-lab";
+    rcloneConfigFile = "/etc/secrets/rclone.conf";
+    passwordFile  = "/etc/secrets/restic-pcloud.password";
+    paths = [
+      "/data/@less"
+      "/data/@more"
+      "/home/newlix/dotfiles"
+      "/home/newlix/github"
+    ];
+    timerConfig = {
+      OnCalendar = "daily";
+      Persistent = true;
+    };
+    pruneOpts = [
+      "--keep-daily 7"
+      "--keep-weekly 4"
+      "--keep-monthly 12"
+    ];
+  };
+
   # ── btrbk ──────────────────────────────────────────────────────────────────
   # Daily snapshots + send/receive backup to /backup (sdc)
   services.btrbk.instances."backup" = {

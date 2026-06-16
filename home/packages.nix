@@ -78,8 +78,6 @@
 
     # Browser
     google-chrome
-    inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
-
     # File manager
     nautilus
     file-roller
