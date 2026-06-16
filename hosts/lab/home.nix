@@ -113,7 +113,7 @@
         Mod+Shift+Slash { show-hotkey-overlay; }
         Mod+T { spawn "foot"; }
         Mod+E { spawn "nautilus" "--new-window"; }
-        Mod+B { spawn "zen-beta" "--new-window" "about:newtab"; }
+        Mod+B { spawn "google-chrome-stable" "--new-window"; }
         Mod+G { spawn "google-chrome-stable" "--app=https://gemini.google.com"; }
         Super+Space { spawn "walker"; }
         Ctrl+Mod+Q { spawn "wlogout" "-b" "5" "-T" "480" "-B" "480" "-L" "300" "-R" "300"; }
@@ -531,13 +531,13 @@
       "text/x-nix" = [ "zed.desktop" ];
       "application/json" = [ "zed.desktop" ];
 
-      # Web → Zen
-      "text/html" = [ "zen-beta.desktop" ];
-      "application/xhtml+xml" = [ "zen-beta.desktop" ];
-      "x-scheme-handler/http" = [ "zen-beta.desktop" ];
-      "x-scheme-handler/https" = [ "zen-beta.desktop" ];
-      "x-scheme-handler/about" = [ "zen-beta.desktop" ];
-      "x-scheme-handler/unknown" = [ "zen-beta.desktop" ];
+      # Web → Chrome
+      "text/html" = [ "google-chrome.desktop" ];
+      "application/xhtml+xml" = [ "google-chrome.desktop" ];
+      "x-scheme-handler/http" = [ "google-chrome.desktop" ];
+      "x-scheme-handler/https" = [ "google-chrome.desktop" ];
+      "x-scheme-handler/about" = [ "google-chrome.desktop" ];
+      "x-scheme-handler/unknown" = [ "google-chrome.desktop" ];
 
       # Audio → Amberol
       "audio/mpeg" = [ "io.bassi.Amberol.desktop" ];
