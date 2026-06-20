@@ -10,6 +10,50 @@
   # Lab-specific packages (NVIDIA GPU available)
   home.packages = with pkgs; [
     ffmpeg
+    imv
+    (writeShellScriptBin "extract-here" ''
+      term() {
+        foot -e sh -c '"$@"; echo; read -p "按 Enter 關閉..."' extract-here "$@"
+      }
+
+      try_extract() {
+        case "$1" in
+          *.zip|*.ZIP)
+            unzip -o "$1" </dev/null 2>/dev/null && return 0
+            term unzip -o "$1"
+            ;;
+          *.rar|*.RAR)
+            unrar x "$1" </dev/null 2>/dev/null && return 0
+            term unrar x "$1"
+            ;;
+          *.7z)
+            7z x "$1" </dev/null 2>/dev/null && return 0
+            term 7z x "$1"
+            ;;
+          *.tar|*.tar.gz|*.tgz|*.tar.bz2|*.tbz2|*.tar.xz|*.txz|*.tar.zst)
+            tar -xf "$1"
+            ;;
+          *.gz)
+            gunzip "$1"
+            ;;
+          *.bz2)
+            bunzip2 "$1"
+            ;;
+          *.xz)
+            unxz "$1"
+            ;;
+          *.zst)
+            unzstd "$1"
+            ;;
+        esac
+      }
+
+      for f in "$@"; do
+        dir=$(dirname "$f")
+        cd "$dir" || continue
+        try_extract "$f"
+      done
+    '')
     (writeShellScriptBin "zed-open" ''
       # Opens file(s) in Zed, then focuses existing window via Niri IPC
       zeditor "$@"
@@ -548,34 +592,50 @@
       "x-scheme-handler/about" = [ "google-chrome.desktop" ];
       "x-scheme-handler/unknown" = [ "google-chrome.desktop" ];
 
-      # Audio → Amberol
-      "audio/mpeg" = [ "io.bassi.Amberol.desktop" ];
-      "audio/flac" = [ "io.bassi.Amberol.desktop" ];
-      "audio/x-flac" = [ "io.bassi.Amberol.desktop" ];
-      "audio/ogg" = [ "io.bassi.Amberol.desktop" ];
-      "audio/x-vorbis+ogg" = [ "io.bassi.Amberol.desktop" ];
-      "audio/opus" = [ "io.bassi.Amberol.desktop" ];
-      "audio/aac" = [ "io.bassi.Amberol.desktop" ];
-      "audio/mp4" = [ "io.bassi.Amberol.desktop" ];
-      "audio/x-m4a" = [ "io.bassi.Amberol.desktop" ];
-      "audio/wav" = [ "io.bassi.Amberol.desktop" ];
-      "audio/x-wav" = [ "io.bassi.Amberol.desktop" ];
-      "audio/x-ms-wma" = [ "io.bassi.Amberol.desktop" ];
+      # Audio → mpv
+      "audio/mpeg" = [ "mpv.desktop" ];
+      "audio/flac" = [ "mpv.desktop" ];
+      "audio/x-flac" = [ "mpv.desktop" ];
+      "audio/ogg" = [ "mpv.desktop" ];
+      "audio/x-vorbis+ogg" = [ "mpv.desktop" ];
+      "audio/opus" = [ "mpv.desktop" ];
+      "audio/aac" = [ "mpv.desktop" ];
+      "audio/mp4" = [ "mpv.desktop" ];
+      "audio/x-m4a" = [ "mpv.desktop" ];
+      "audio/wav" = [ "mpv.desktop" ];
+      "audio/x-wav" = [ "mpv.desktop" ];
+      "audio/x-ms-wma" = [ "mpv.desktop" ];
 
-      # Images → Loupe
-      "image/jpeg" = [ "org.gnome.Loupe.desktop" ];
-      "image/png" = [ "org.gnome.Loupe.desktop" ];
-      "image/gif" = [ "org.gnome.Loupe.desktop" ];
-      "image/webp" = [ "org.gnome.Loupe.desktop" ];
-      "image/bmp" = [ "org.gnome.Loupe.desktop" ];
-      "image/tiff" = [ "org.gnome.Loupe.desktop" ];
-      "image/svg+xml" = [ "org.gnome.Loupe.desktop" ];
-      "image/heif" = [ "org.gnome.Loupe.desktop" ];
-      "image/heic" = [ "org.gnome.Loupe.desktop" ];
-      "image/avif" = [ "org.gnome.Loupe.desktop" ];
-      "image/x-portable-pixmap" = [ "org.gnome.Loupe.desktop" ];
-      "image/x-portable-graymap" = [ "org.gnome.Loupe.desktop" ];
-      "image/x-portable-bitmap" = [ "org.gnome.Loupe.desktop" ];
+      # Images → imv-dir
+      "image/jpeg" = [ "imv-dir.desktop" ];
+      "image/png" = [ "imv-dir.desktop" ];
+      "image/gif" = [ "imv-dir.desktop" ];
+      "image/webp" = [ "imv-dir.desktop" ];
+      "image/bmp" = [ "imv-dir.desktop" ];
+      "image/tiff" = [ "imv-dir.desktop" ];
+      "image/svg+xml" = [ "imv-dir.desktop" ];
+      "image/heif" = [ "imv-dir.desktop" ];
+      "image/heic" = [ "imv-dir.desktop" ];
+      "image/avif" = [ "imv-dir.desktop" ];
+      "image/x-portable-pixmap" = [ "imv-dir.desktop" ];
+      "image/x-portable-graymap" = [ "imv-dir.desktop" ];
+      "image/x-portable-bitmap" = [ "imv-dir.desktop" ];
+
+      # Archives → Extract Here
+      "application/zip" = [ "extract-here.desktop" ];
+      "application/x-zip-compressed" = [ "extract-here.desktop" ];
+      "application/x-tar" = [ "extract-here.desktop" ];
+      "application/gzip" = [ "extract-here.desktop" ];
+      "application/x-bzip" = [ "extract-here.desktop" ];
+      "application/x-bzip2" = [ "extract-here.desktop" ];
+      "application/x-xz" = [ "extract-here.desktop" ];
+      "application/x-7z-compressed" = [ "extract-here.desktop" ];
+      "application/x-rar" = [ "extract-here.desktop" ];
+      "application/vnd.rar" = [ "extract-here.desktop" ];
+      "application/x-zstd" = [ "extract-here.desktop" ];
+      "application/x-compress" = [ "extract-here.desktop" ];
+      "application/x-lz4" = [ "extract-here.desktop" ];
+      "application/x-lzip" = [ "extract-here.desktop" ];
     };
   };
 
@@ -619,6 +679,20 @@
       X-KDE-RunOnDiscreteGpu = "true";
       StartupWMClass = "steam";
     };
+  };
+
+  xdg.desktopEntries.extract-here = {
+    name = "Extract Here";
+    exec = "extract-here %F";
+    icon = "file-roller";
+    categories = [ "Utility" "Archiving" ];
+    terminal = false;
+    mimeType = [
+      "application/zip" "application/x-zip-compressed"
+      "application/x-tar" "application/gzip" "application/x-bzip" "application/x-bzip2"
+      "application/x-xz" "application/x-7z-compressed" "application/x-rar" "application/vnd.rar"
+      "application/x-zstd" "application/x-compress" "application/x-lz4" "application/x-lzip"
+    ];
   };
 
   xdg.desktopEntries.zed = {

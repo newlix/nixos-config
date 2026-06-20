@@ -80,7 +80,7 @@
     google-chrome
     # File manager
     nautilus
-    file-roller
+
     ffmpegthumbnailer
     gst_all_1.gst-plugins-base
     gst_all_1.gst-plugins-good
@@ -90,8 +90,7 @@
     gst_all_1.gst-vaapi
     papirus-icon-theme
 
-    # Image viewer
-    loupe
+    # Image viewer (replaced by imv in lab/home.nix)
 
     # Screenshot
     swappy
@@ -105,8 +104,7 @@
     # Notifications
     libnotify
 
-    # Music
-    amberol
+    # Music (uses mpv now)
     playerctl
 
     # Notes
