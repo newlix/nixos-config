@@ -7,7 +7,7 @@
     git
     curl wget
     fresh-editor
-    vim
+
     helix
     tmux
     htop
@@ -39,6 +39,7 @@
   home-manager.users.newlix.home.packages = with pkgs; [
     gh
     claude-code
+    opencode
 
     # Go
     gopls
@@ -71,8 +72,7 @@
     # Niri ecosystem
     waybar
     foot
-    walker
-    elephant
+    fuzzel
     pavucontrol
     swaylock-effects
 

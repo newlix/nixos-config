@@ -183,15 +183,6 @@
   # Enable joycond for Nintendo Switch controllers
   services.joycond.enable = true;
 
-  # Wrapper: bwrap in steam uses --chdir "$(pwd)" which fails if cwd
-  # is not bind-mounted into the sandbox (e.g. when launched from walker).
-  environment.systemPackages = [
-    (pkgs.writeShellScriptBin "steam-run" ''
-      cd "$HOME"
-      exec steam "$@"
-    '')
-  ];
-
   # ── SSH ────────────────────────────────────────────────────────────────────
   services.openssh = {
     enable = true;

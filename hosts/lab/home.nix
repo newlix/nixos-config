@@ -82,7 +82,7 @@
     }
 
     spawn-at-startup "xwayland-satellite"
-    spawn-at-startup "walker" "--gapplication-service"
+    spawn-at-startup "fuzzel" "--daemon"
 
     prefer-no-csd
     screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
@@ -115,7 +115,7 @@
         Mod+E { spawn "nautilus" "--new-window"; }
         Mod+B { spawn "google-chrome-stable" "--new-window"; }
         Mod+G { spawn "google-chrome-stable" "--app=https://gemini.google.com"; }
-        Super+Space { spawn "walker"; }
+        Super+Space { spawn "fuzzel"; }
         Ctrl+Mod+Q { spawn "wlogout" "-b" "5" "-T" "480" "-B" "480" "-L" "300" "-R" "300"; }
 
         XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+ -l 1.0"; }
@@ -570,18 +570,41 @@
     };
   };
 
+  # ── Fuzzel ──────────────────────────────────────────────────────────────
+  xdg.configFile."fuzzel/fuzzel.ini".text = ''
+    [main]
+    font=Hack:size=13
+    icon-theme=Papirus-Dark
+    icons-enabled=yes
+    lines=8
+    width=35
+    horizontal-pad=16
+    vertical-pad=12
+    inner-pad=8
+    border-width=1
+    border-radius=8
+
+    [colors]
+    background=1e1e1eee
+    text=ffffffd9
+    match=8ab4f8ff
+    selection=ffffff1f
+    selection-text=ffffffff
+    selection-match=8ab4f8ff
+    border=ffffff14
+    prompt=ffffff8c
+  '';
+
   # ── Desktop Entries ─────────────────────────────────────────────────────
   xdg.desktopEntries.steam = {
     name = "Steam";
     comment = "Application for managing and playing games on Steam";
-    exec = "steam-run %U";
+    exec = "steam %U";
     icon = "steam";
     categories = [ "Game" "Network" "FileTransfer" ];
     terminal = false;
     mimeType = [ "x-scheme-handler/steam" "x-scheme-handler/steamlink" ];
     settings = {
-      # Steam's bwrap uses --chdir "$(pwd)"; walker's cwd may not exist
-      # inside the sandbox, so pin it to $HOME.
       Path = "/home/newlix";
       PrefersNonDefaultGPU = "true";
       X-KDE-RunOnDiscreteGpu = "true";
