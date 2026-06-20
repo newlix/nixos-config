@@ -169,7 +169,7 @@
         Mod+B { spawn "google-chrome-stable" "--new-window"; }
         Mod+G { spawn "google-chrome-stable" "--app=https://gemini.google.com"; }
         Super+Space { spawn "fuzzel"; }
-        Ctrl+Mod+Q { spawn "wlogout" "-b" "5" "-T" "480" "-B" "480" "-L" "300" "-R" "300"; }
+        Ctrl+Mod+Q { spawn "wlogout" "-b" "4" "-T" "480" "-B" "480" "-L" "300" "-R" "300"; }
 
         XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+ -l 1.0"; }
         XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-"; }
@@ -192,52 +192,13 @@
         Mod+Down  { focus-window-down; }
         Mod+Up    { focus-window-up; }
         Mod+Right { focus-column-right; }
-        Mod+H     { focus-column-left; }
-        Mod+J     { focus-window-down; }
-        Mod+K     { focus-window-up; }
-        Mod+L     { focus-column-right; }
-
         Mod+Ctrl+Left  { move-column-left; }
         Mod+Ctrl+Down  { move-window-down; }
         Mod+Ctrl+Up    { move-window-up; }
         Mod+Ctrl+Right { move-column-right; }
-        Mod+Ctrl+H     { move-column-left; }
-        Mod+Ctrl+J     { move-window-down; }
-        Mod+Ctrl+K     { move-window-up; }
-        Mod+Ctrl+L     { move-column-right; }
 
         Mod+Home { focus-column-first; }
         Mod+End  { focus-column-last; }
-        Mod+Ctrl+Home { move-column-to-first; }
-        Mod+Ctrl+End  { move-column-to-last; }
-
-        Mod+Shift+Left  { focus-monitor-left; }
-        Mod+Shift+Down  { focus-monitor-down; }
-        Mod+Shift+Up    { focus-monitor-up; }
-        Mod+Shift+Right { focus-monitor-right; }
-        Mod+Shift+H     { focus-monitor-left; }
-        Mod+Shift+J     { focus-monitor-down; }
-        Mod+Shift+K     { focus-monitor-up; }
-        Mod+Shift+L     { focus-monitor-right; }
-
-        Mod+Page_Down { focus-workspace-down; }
-        Mod+Page_Up   { focus-workspace-up; }
-        Mod+U         { focus-workspace-down; }
-        Mod+I         { focus-workspace-up; }
-        Mod+Ctrl+Page_Down { move-column-to-workspace-down; }
-        Mod+Ctrl+Page_Up   { move-column-to-workspace-up; }
-        Mod+Ctrl+U         { move-column-to-workspace-down; }
-        Mod+Ctrl+I         { move-column-to-workspace-up; }
-
-        Mod+Shift+Page_Down { move-workspace-down; }
-        Mod+Shift+Page_Up   { move-workspace-up; }
-        Mod+Shift+U         { move-workspace-down; }
-        Mod+Shift+I         { move-workspace-up; }
-
-        Mod+WheelScrollDown cooldown-ms=150 { focus-workspace-down; }
-        Mod+WheelScrollUp   cooldown-ms=150 { focus-workspace-up; }
-        Mod+WheelScrollRight { focus-column-right; }
-        Mod+WheelScrollLeft  { focus-column-left; }
 
         Mod+1 { focus-workspace 1; }
         Mod+2 { focus-workspace 2; }
@@ -259,35 +220,20 @@
         Mod+Ctrl+8 { move-column-to-workspace 8; }
         Mod+Ctrl+9 { move-column-to-workspace 9; }
 
-        Mod+BracketLeft  { consume-or-expel-window-left; }
-        Mod+BracketRight { consume-or-expel-window-right; }
-        Mod+Comma  { consume-window-into-column; }
-        Mod+Period { expel-window-from-column; }
-
         Mod+R { switch-preset-column-width; }
-        Mod+Shift+R { switch-preset-window-height; }
-        Mod+Ctrl+R { reset-window-height; }
         Mod+F { maximize-column; }
         Mod+Shift+F { fullscreen-window; }
-        Mod+Ctrl+F { expand-column-to-available-width; }
-        Mod+C { center-column; }
-        Mod+Ctrl+C { center-visible-columns; }
 
         // Mod+Minus { set-column-width "-10%"; }
         // Mod+Equal { set-column-width "+10%"; }
         // Mod+Shift+Minus { set-window-height "-10%"; }
         // Mod+Shift+Equal { set-window-height "+10%"; }
 
-        Mod+V       { toggle-window-floating; }
-        Mod+Shift+V { switch-focus-between-floating-and-tiling; }
-
         Ctrl+Shift+3 { screenshot-screen; }
         Ctrl+Shift+4 { screenshot; }
         Ctrl+Shift+5 { screenshot-window; }
 
-        Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
         Ctrl+Shift+Q { quit; }
-        Mod+Shift+P { power-off-monitors; }
     }
   '';
 
@@ -362,7 +308,7 @@
       "custom/lock" = {
         format = "⏻";
         tooltip = false;
-        on-click = "wlogout -b 5 -T 480 -B 480 -L 300 -R 300";
+        on-click = "wlogout -b 4 -T 480 -B 480 -L 300 -R 300";
       };
     }];
 
@@ -456,9 +402,8 @@
   programs.wlogout = {
     enable = true;
     layout = [
-      { label = "lock";     action = "swaylock";          text = "";  keybind = "l"; }
+      { label = "lock";     action = "swaylock & niri msg action power-off-monitors"; text = ""; keybind = "l"; }
       { label = "logout";   action = "niri msg action quit --skip-confirmation"; text = ""; keybind = "e"; }
-      { label = "suspend";  action = "systemctl suspend";  text = "";  keybind = "s"; }
       { label = "reboot";   action = "systemctl reboot";   text = "";  keybind = "r"; }
       { label = "shutdown"; action = "systemctl poweroff"; text = "";  keybind = "p"; }
     ];
@@ -483,7 +428,6 @@
         transition: background-color 0.15s ease, border-color 0.15s ease;
       }
 
-      button:focus,
       button:hover,
       button:active {
         background-color: rgba(255, 255, 255, 0.14);
@@ -491,9 +435,8 @@
         outline: none;
       }
 
-      #lock     { background-image: image(url("${pkgs.wlogout}/share/wlogout/icons/lock.png")); }
-      #logout   { background-image: image(url("${pkgs.wlogout}/share/wlogout/icons/logout.png")); }
-      #suspend  { background-image: image(url("${pkgs.wlogout}/share/wlogout/icons/suspend.png")); }
+      #lock         { background-image: image(url("${pkgs.wlogout}/share/wlogout/icons/lock.png")); }
+      #logout       { background-image: image(url("${pkgs.wlogout}/share/wlogout/icons/logout.png")); }
       #reboot   { background-image: image(url("${pkgs.wlogout}/share/wlogout/icons/reboot.png")); }
       #shutdown { background-image: image(url("${pkgs.wlogout}/share/wlogout/icons/shutdown.png")); }
     '';
