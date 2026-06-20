@@ -10,6 +10,15 @@
   # Lab-specific packages (NVIDIA GPU available)
   home.packages = with pkgs; [
     ffmpeg
+    (writeShellScriptBin "zed-open" ''
+      # Opens file(s) in Zed, then focuses existing window via Niri IPC
+      zeditor "$@"
+      sleep 0.3
+      wid=$(niri msg windows 2>/dev/null | awk '/^Window ID [0-9]+:$/ {id=$3} /App ID: "dev.zed.Zed"/ {gsub(/:/,"",id); print id; exit}')
+      if [ -n "$wid" ]; then
+        niri msg action focus-window --id "$wid" 2>/dev/null || true
+      fi
+    '')
   ];
 
   programs.bash.shellAliases = {
@@ -614,7 +623,7 @@
 
   xdg.desktopEntries.zed = {
     name = "Zed";
-    exec = "zeditor %F";
+    exec = "zed-open %F";
     icon = "zed";
     categories = [ "Development" "TextEditor" ];
     terminal = false;
