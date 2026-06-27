@@ -11,6 +11,7 @@
   home.packages = with pkgs; [
     ffmpeg
     imv
+    min
     (writeShellScriptBin "extract-here" ''
       term() {
         foot -e sh -c '"$@"; echo; read -p "按 Enter 關閉..."' extract-here "$@"
@@ -135,7 +136,6 @@
     }
 
     spawn-at-startup "xwayland-satellite"
-    spawn-at-startup "fuzzel" "--daemon"
 
     prefer-no-csd
     screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
@@ -308,7 +308,7 @@
       "custom/lock" = {
         format = "⏻";
         tooltip = false;
-        on-click = "wlogout -b 4 -T 480 -B 480 -L 300 -R 300";
+        on-click = "pgrep -x wlogout > /dev/null && pkill wlogout || wlogout -b 4 -T 480 -B 480 -L 300 -R 300";
       };
     }];
 
@@ -593,8 +593,6 @@
     horizontal-pad=16
     vertical-pad=12
     inner-pad=8
-    border-width=1
-    border-radius=8
 
     [colors]
     background=1e1e1eee
@@ -622,6 +620,16 @@
       X-KDE-RunOnDiscreteGpu = "true";
       StartupWMClass = "steam";
     };
+  };
+
+  xdg.desktopEntries.min = {
+    name = "Min";
+    comment = "A minimal, smarter web browser";
+    exec = "min %U";
+    icon = "min";
+    categories = [ "Network" "WebBrowser" ];
+    terminal = false;
+    mimeType = [ "text/html" "text/xml" "x-scheme-handler/http" "x-scheme-handler/https" ];
   };
 
   xdg.desktopEntries.extract-here = {

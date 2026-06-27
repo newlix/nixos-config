@@ -78,6 +78,9 @@
 
     # Browser
     google-chrome
+
+    # Editor
+    sublime4
     # File manager
     nautilus
 

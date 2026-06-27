@@ -17,6 +17,13 @@
 
   boot.kernelPackages = pkgs.linuxPackages; # LTS — avoids NVIDIA driver build failures on kernel bumps
 
+  # Shutdown watchdog — forces reboot after 5 min if shutdown hangs (e.g. FUSE unmount).
+  systemd.settings.Manager.ShutdownWatchdogSec = "5min";
+
+  # Blacklist xpad: clone controllers have known kernel hang on unplug.
+  # Fall back to usbhid + Steam Input for all controllers.
+  boot.blacklistedKernelModules = [ "xpad" ];
+
   # ── Networking ─────────────────────────────────────────────────────────────
   networking.hostName = "lab";
   networking.networkmanager.enable = true;
@@ -48,6 +55,7 @@
   hardware.graphics.enable = true;
 
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.permittedInsecurePackages = [ "openssl-1.1.1w" ];
 
   # NVIDIA RTX 5070 Ti (GB203/Blackwell)
   services.xserver.videoDrivers = [ "nvidia" ];
@@ -158,10 +166,10 @@
     libxtst
   ];
 
-  # ── envfs ────────────────────────────────────────────────────────────────
-  # Mounts a FUSE filesystem on /usr/bin and /bin that provides executables
-  # from nixpkgs, so scripts with shebangs like #!/usr/bin/env bash just work.
-  services.envfs.enable = true;
+  # ── /usr/bin ─────────────────────────────────────────────────────────────
+  # environment.usrbinenv (default: pkgs.coreutils/bin/env) already creates
+  # /usr/bin/env.  envfs (FUSE) was disabled because mount.envfs survived
+  # umount on shutdown and blocked the final reboot pivot.
 
   # ── Home Manager ───────────────────────────────────────────────────────────
   home-manager = {
