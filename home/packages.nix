@@ -40,6 +40,7 @@
     gh
     claude-code
     opencode
+    ctx7
 
     # Go
     gopls
