@@ -65,6 +65,8 @@
     });
 
     initExtra = ''
+      source ~/.profile.local 2>/dev/null || true
+
       shopt -s checkwinsize globstar histappend
       bind 'set completion-ignore-case on'
       bind 'set show-all-if-ambiguous on'
