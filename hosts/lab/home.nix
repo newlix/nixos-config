@@ -12,6 +12,7 @@
     ffmpeg
     imv
     min
+    swaynotificationcenter
     (writeShellScriptBin "extract-here" ''
       term() {
         foot -e sh -c '"$@"; echo; read -p "按 Enter 關閉..."' extract-here "$@"
@@ -136,6 +137,7 @@
     }
 
     spawn-at-startup "xwayland-satellite"
+    spawn-at-startup "swaync"
 
     prefer-no-csd
     screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
@@ -169,6 +171,7 @@
         Mod+B { spawn "google-chrome-stable" "--new-window"; }
         Mod+G { spawn "google-chrome-stable" "--app=https://gemini.google.com"; }
         Super+Space { spawn "fuzzel"; }
+        Mod+N { spawn "swaync-client" "-t" "-sw"; }
         Ctrl+Mod+Q { spawn "wlogout" "-b" "4" "-T" "480" "-B" "480" "-L" "300" "-R" "300"; }
 
         XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+ -l 1.0"; }
@@ -262,6 +265,7 @@
         "custom/netspeed"
         "wireplumber"
         "clock"
+        "custom/notification"
       ];
 
       "niri/window" = {
@@ -286,6 +290,27 @@
         exec = "iface=$(ip route show default | awk '/default/{print $5; exit}'); rx0=$(cat /sys/class/net/$iface/statistics/rx_bytes 2>/dev/null); tx0=$(cat /sys/class/net/$iface/statistics/tx_bytes 2>/dev/null); sleep 1; rx1=$(cat /sys/class/net/$iface/statistics/rx_bytes 2>/dev/null); tx1=$(cat /sys/class/net/$iface/statistics/tx_bytes 2>/dev/null); rxs=$(( (rx1-rx0) )); txs=$(( (tx1-tx0) )); if [ $rxs -gt 1048576 ]; then rxf=$(printf '%5.1fM' $(echo \"scale=1; $rxs/1048576\" | bc)); elif [ $rxs -gt 1024 ]; then rxf=$(printf '%5dK' $(($rxs/1024))); else rxf=$(printf '%5dB' $rxs); fi; if [ $txs -gt 1048576 ]; then txf=$(printf '%5.1fM' $(echo \"scale=1; $txs/1048576\" | bc)); elif [ $txs -gt 1024 ]; then txf=$(printf '%5dK' $(($txs/1024))); else txf=$(printf '%5dB' $txs); fi; echo \"▼$rxf ▲$txf\"";
         on-click = "foot -e sudo ${pkgs.bandwhich}/bin/bandwhich";
         tooltip = false;
+      };
+
+      "custom/notification" = {
+        tooltip = true;
+        format = "<span size='14pt'>{icon}</span>";
+        format-icons = {
+          notification = "";
+          none = "";
+          dnd-notification = "";
+          dnd-none = "";
+          inhibited-notification = "";
+          inhibited-none = "";
+          dnd-inhibited-notification = "";
+          dnd-inhibited-none = "";
+        };
+        return-type = "json";
+        exec-if = "which swaync-client";
+        exec = "swaync-client -swb";
+        on-click = "swaync-client -t -sw";
+        on-click-right = "swaync-client -d -sw";
+        escape = true;
       };
 
       "clock" = {
@@ -353,6 +378,7 @@
       #custom-lock,
       #custom-sysinfo,
       #custom-netspeed,
+      #custom-notification,
       #clock,
       #wireplumber {
         padding: 4px 12px;
@@ -364,6 +390,7 @@
       #custom-lock:hover,
       #custom-sysinfo:hover,
       #custom-netspeed:hover,
+      #custom-notification:hover,
       #clock:hover,
       #wireplumber:hover {
         background-color: rgba(255, 255, 255, 0.08);
@@ -845,7 +872,7 @@
     };
   };
 
-  # ── Fcitx5 (RIME) ──────────────────────────────────────────────────────────
+  # ── Fcitx5 (McBopomofo) ────────────────────────────────────────────────────
   # System-level i18n.inputMethod is in configuration.nix; only user config here.
   xdg.configFile."fcitx5/config".text = ''
     [Hotkey]
@@ -859,31 +886,355 @@
     ShareInputState=No
     DefaultPageSize=5
   '';
-  xdg.dataFile."fcitx5/rime/default.custom.yaml".text = ''
-    patch:
-      schema_list:
-        - schema: bopomofo_tw
-      "menu/page_size": 5
-  '';
-  xdg.dataFile."fcitx5/rime/bopomofo_tw.custom.yaml".text = ''
-    patch:
-      grammar:
-        language: wanxiang-lts-zh-hant
-        collocation_max_length: 6
-        collocation_min_length: 3
-        collocation_penalty: -14
-        non_collocation_penalty: -6
-        weak_collocation_penalty: -100
-        rear_penalty: -20
-      translator/contextual_suggestions: false
-      translator/max_homophones: 8
+  # Despite the symlink from dotfiles/link.sh, home-manager's xdg.configFile
+  # takes precedence because it's written last. fcitx5 may still overwrite this
+  # on runtime, but at least the initial state is correct.
+  xdg.configFile."fcitx5/profile".text = ''
+    [Groups/0]
+    # Group Name
+    Name=Default
+    # Layout
+    Default Layout=us
+    # Default Input Method
+    DefaultIM=keyboard-us
+
+    [Groups/0/Items/0]
+    # Name
+    Name=keyboard-us
+    # Layout
+    Layout=
+
+    [Groups/0/Items/1]
+    # Name
+    Name=mcbopomofo
+    # Layout
+    Layout=
+
+    [GroupOrder]
+    0=Default
   '';
 
   # ── USB automount ────────────────────────────────────────────────────────
   services.udiskie.enable = true;
 
-  # ── Notifications ────────────────────────────────────────────────────────
-  services.mako.enable = true;
+  # ── Notifications (swaync) ───────────────────────────────────────────────
+  services.mako.enable = false;
+
+  xdg.configFile."swaync/config.json".text = ''
+    {
+      "positionX": "right",
+      "positionY": "top",
+      "layer": "overlay",
+      "control-center-layer": "top",
+      "layer-shell": true,
+      "cssPriority": "application",
+      "control-center-margin-top": 8,
+      "control-center-margin-bottom": 8,
+      "control-center-margin-right": 8,
+      "control-center-margin-left": 8,
+      "notification-icon-size": 48,
+      "notification-body-image-height": 160,
+      "notification-body-image-width": 200,
+      "timeout": 5,
+      "timeout-low": 5,
+      "timeout-critical": 0,
+      "fit-to-screen": true,
+      "control-center-width": 400,
+      "control-center-height": 600,
+      "notification-window-width": 350,
+      "keyboard-shortcuts": true,
+      "image-visibility": "when-available",
+      "hide-on-clear-all": false,
+      "hide-on-action": true,
+      "script-fail-notify": true,
+      "widgets": [
+        "title",
+        "dnd",
+        "notifications",
+        "mpris",
+        "volume",
+        "buttons-grid"
+      ],
+      "widget-config": {
+        "title": {
+          "text": "Notifications",
+          "clear-all-button": true,
+          "button-text": "Clear All"
+        },
+        "dnd": {
+          "text": "Do Not Disturb"
+        },
+        "label": {
+          "max-lines": 5,
+          "text": "Notification Center"
+        },
+        "mpris": {
+          "image-size": 96,
+          "image-radius": 8,
+          "loop": true,
+          "blacklist": [""]
+        },
+        "volume": {
+          "label": "Volume"
+        },
+
+        "buttons-grid": {
+          "actions": [
+            {
+              "label": "",
+              "command": "swaylock & niri msg action power-off-monitors"
+            },
+            {
+              "label": "",
+              "command": "wlogout -b 4 -T 480 -B 480 -L 300 -R 300"
+            }
+          ]
+        }
+      }
+    }
+  '';
+
+  xdg.configFile."swaync/style.css".text = ''
+    * {
+      all: unset;
+      font-family: Hack, Symbols Nerd Font, monospace;
+      font-size: 13px;
+    }
+
+    .control-center {
+      background: rgba(20, 20, 22, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .notification-row {
+      outline: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .notification {
+      background: rgba(40, 40, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      margin: 4px 0;
+      padding: 10px;
+      transition: background 0.15s ease;
+    }
+
+    .notification:hover {
+      background: rgba(50, 50, 52, 0.9);
+    }
+
+    .notification.default {
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .notification.low {
+      border-color: rgba(150, 203, 254, 0.3);
+    }
+
+    .notification.critical {
+      border-color: rgba(255, 108, 96, 0.5);
+    }
+
+    .notification-content {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .summary {
+      font-weight: bold;
+      color: rgba(255, 255, 255, 0.95);
+      font-size: 13px;
+    }
+
+    .time {
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 11px;
+    }
+
+    .body {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .image {
+      border-radius: 8px;
+    }
+
+    .notification-default-action {
+      margin: 0;
+      padding: 0;
+      border-radius: 10px;
+    }
+
+    .close-button {
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 6px;
+      color: rgba(255, 255, 255, 0.5);
+      margin: 2px;
+      padding: 2px 6px;
+    }
+
+    .close-button:hover {
+      background: rgba(255, 108, 96, 0.3);
+      color: #ff6c60;
+    }
+
+    .notification-actions {
+      margin-top: 6px;
+    }
+
+    .notification-action {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      color: rgba(255, 255, 255, 0.8);
+      padding: 4px 8px;
+    }
+
+    .notification-action:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .control-center-list {
+      background: transparent;
+    }
+
+    .control-center-list-placeholder {
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    .blank-window {
+      background: transparent;
+    }
+
+    .dnd {
+      background: rgba(40, 40, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      margin: 4px 0;
+      padding: 8px 12px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .dnd > * {
+      margin: 0 4px;
+    }
+
+    .dnd slider {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
+
+    .widget-title {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 15px;
+      font-weight: bold;
+      margin: 4px 0;
+      padding: 0 4px;
+    }
+
+    .widget-title button {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      color: rgba(255, 255, 255, 0.6);
+      padding: 2px 8px;
+    }
+
+    .widget-title button:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .widget-label {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 12px;
+      margin: 4px 0;
+    }
+
+    .widget-mpris {
+      background: rgba(40, 40, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      margin: 4px 0;
+      padding: 10px;
+    }
+
+    .widget-mpris-player {
+      padding: 4px 0;
+    }
+
+    .widget-mpris-title {
+      font-weight: bold;
+      font-size: 13px;
+    }
+
+    .widget-mpris-subtitle {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .widget-volume {
+      background: rgba(40, 40, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      margin: 4px 0;
+      padding: 8px 12px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .widget-volume trough {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      min-height: 6px;
+    }
+
+    .widget-volume highlight {
+      background: rgba(150, 203, 254, 0.8);
+      border-radius: 4px;
+    }
+
+    .widget-backlight {
+      background: rgba(40, 40, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      margin: 4px 0;
+      padding: 8px 12px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .widget-backlight trough {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      min-height: 6px;
+    }
+
+    .widget-backlight highlight {
+      background: rgba(255, 203, 107, 0.8);
+      border-radius: 4px;
+    }
+
+    .buttons-grid {
+      margin: 4px 0;
+    }
+
+    .buttons-grid button {
+      background: rgba(40, 40, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 8px 12px;
+      min-width: 40px;
+    }
+
+    .buttons-grid button:hover {
+      background: rgba(50, 50, 52, 0.9);
+    }
+  '';
+
 
   # ── GNOME keyring (Chrome passwords, SSH/GPG passphrases) ────────────────
   services.gnome-keyring.enable = true;

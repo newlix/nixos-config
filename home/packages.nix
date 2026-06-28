@@ -83,9 +83,6 @@
     # Editor
     sublime4
 
-    # IME
-    rime-data
-
     # File manager
     nautilus
 
