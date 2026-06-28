@@ -11,7 +11,6 @@
   home.packages = with pkgs; [
     ffmpeg
     imv
-    min
     swaynotificationcenter
     (writeShellScriptBin "extract-here" ''
       term() {
