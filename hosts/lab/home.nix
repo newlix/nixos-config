@@ -845,7 +845,7 @@
     };
   };
 
-  # ── Fcitx5 (McBopomofo) ────────────────────────────────────────────────────
+  # ── Fcitx5 (RIME) ──────────────────────────────────────────────────────────
   # System-level i18n.inputMethod is in configuration.nix; only user config here.
   xdg.configFile."fcitx5/config".text = ''
     [Hotkey]
@@ -858,6 +858,25 @@
     PreeditEnabledByDefault=True
     ShareInputState=No
     DefaultPageSize=5
+  '';
+  xdg.dataFile."fcitx5/rime/default.custom.yaml".text = ''
+    patch:
+      schema_list:
+        - schema: bopomofo_tw
+      "menu/page_size": 5
+  '';
+  xdg.dataFile."fcitx5/rime/bopomofo_tw.custom.yaml".text = ''
+    patch:
+      grammar:
+        language: wanxiang-lts-zh-hant
+        collocation_max_length: 6
+        collocation_min_length: 3
+        collocation_penalty: -14
+        non_collocation_penalty: -6
+        weak_collocation_penalty: -100
+        rear_penalty: -20
+      translator/contextual_suggestions: false
+      translator/max_homophones: 8
   '';
 
   # ── USB automount ────────────────────────────────────────────────────────

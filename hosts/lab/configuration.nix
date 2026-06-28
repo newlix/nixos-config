@@ -32,12 +32,12 @@
   time.timeZone = "Asia/Taipei";
   i18n.defaultLocale = "en_US.UTF-8";
 
-  # ── Input method (fcitx5 + chewing) ───────────────────────────────────────
+  # ── Input method (fcitx5 + RIME) ─────────────────────────────────────────
   i18n.inputMethod = {
     enable = true;
     type = "fcitx5";
     fcitx5.addons = with pkgs; [
-      fcitx5-mcbopomofo
+      fcitx5-rime
       fcitx5-gtk
     ];
   };
