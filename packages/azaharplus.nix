@@ -1,23 +1,28 @@
 { pkgs, ... }:
 
+let
+  version = "2125.1-A";
+  src = pkgs.fetchzip {
+    url = "https://github.com/AzaharPlus/AzaharPlus/releases/download/AZAHAR_PLUS_2125_1_A/azaharplus-${version}-linux.zip";
+    hash = "sha256-SywHiIBR2ocK7O7v+/H8YYYrmXIZveE9Bjh8/gMmaDE=";
+  };
+  appimage = "${src}/azahar.AppImage";
+in
 pkgs.appimageTools.wrapType2 {
   pname = "azaharplus";
-  version = "unstable-2025-07-01";
-
-  src = pkgs.fetchurl {
-    url = "https://github.com/CaptainVisc/AzaharPlus/releases/download/latest/azaharplus.AppImage";
-    hash = "";
-  };
+  inherit version;
+  src = appimage;
 
   extraInstallCommands =
     let
       appimageContents = pkgs.appimageTools.extract {
         pname = "azaharplus";
-        inherit version src;
+        inherit version;
+        src = appimage;
       };
     in
     ''
-      install -Dm444 ${appimageContents}/org.azahar_emu.Azahar.desktop $out/share/applications/org.azahar_emu.Azahar.desktop
+      install -Dm444 ${appimageContents}/azahar.desktop $out/share/applications/org.azahar_emu.Azahar.desktop
       substituteInPlace $out/share/applications/org.azahar_emu.Azahar.desktop \
         --replace-warn 'Exec=AppRun' 'Exec=azaharplus'
     '';

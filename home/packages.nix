@@ -112,9 +112,8 @@
     # Music (uses mpv now)
     playerctl
 
-    # Games
-
     # Notes
     (import ../packages/scratch.nix { inherit pkgs; })
+    (import ../packages/azaharplus.nix { inherit pkgs; })
   ]);
 }

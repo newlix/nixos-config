@@ -1235,6 +1235,24 @@
   '';
 
 
+  # ── GTK theme (dark mode + Papirus icons) ────────────────────────────────
+  # GTK3: use gtk-application-prefer-dark-theme
+  # GTK4/libadwaita: use color-scheme in dconf
+  gtk = {
+    enable = true;
+    iconTheme = {
+      name = "Papirus-Dark";
+      package = pkgs.papirus-icon-theme;
+    };
+    gtk3.extraConfig = {
+      gtk-application-prefer-dark-theme = 1;
+    };
+    gtk4.extraConfig = {
+      gtk-application-prefer-dark-theme = 1;
+    };
+  };
+  dconf.settings."org/gnome/desktop/interface"."color-scheme" = "prefer-dark";
+
   # ── GNOME keyring (Chrome passwords, SSH/GPG passphrases) ────────────────
   services.gnome-keyring.enable = true;
 }
