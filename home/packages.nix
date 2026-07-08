@@ -12,7 +12,7 @@
     tmux
     htop
     ripgrep fd
-    unzip zip unrar
+    unzip zip unrar p7zip
 
     # Dev
     gcc
@@ -111,6 +111,8 @@
 
     # Music (uses mpv now)
     playerctl
+
+    # Games
 
     # Notes
     (import ../packages/scratch.nix { inherit pkgs; })
