@@ -130,6 +130,7 @@
       dates = "weekly";
       options = "--delete-older-than 14d";
     };
+    optimise.automatic = true; # Weekly nix-store --optimise (dedup hardlinks)
   };
 
   # ── nix-ld ─────────────────────────────────────────────────────────────────
