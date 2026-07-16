@@ -62,6 +62,7 @@
   hardware.nvidia = {
     modesetting.enable = true;
     open = true; # Blackwell mandatory: proprietary module lacks GB2xx support
+    nvidiaSettings = true; # Enable nvidia-settings GUI tool
 
     package = config.boot.kernelPackages.nvidiaPackages.stable;
     powerManagement.enable = false;
@@ -100,6 +101,7 @@
   virtualisation.docker = {
     enable = true;
     enableOnBoot = true;
+    autoPrune.enable = true;  # Auto-prune unused images/containers weekly
   };
 
   # ── Users ──────────────────────────────────────────────────────────────────
@@ -195,8 +197,8 @@
   services.openssh = {
     enable = true;
     settings = {
-      PasswordAuthentication = true;
-      KbdInteractiveAuthentication = true;
+      PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
     };
   };
 
