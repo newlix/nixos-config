@@ -75,6 +75,7 @@
     scripts = with pkgs.mpvScripts; [
       thumbfast
       autoload
+      mpris
     ];
     bindings = {
       "Ctrl+LEFT" = "playlist-prev";
