@@ -54,12 +54,11 @@
       yt-dlp-video = "yt-dlp -S ext:mp4:m4a";
       cl = "npx @anthropic-ai/claude-code@latest --dangerously-skip-permissions --rc";
       gemini = "npx @google/gemini-cli -y";
-    } // (if pkgs.stdenv.isDarwin then {
-      ls = "ls -G";
-      ll = "ls -lahG";
-    } else {
-      ls = "ls --color=auto";
-      ll = "ls -lah --color=auto";
+      cat = "bat --paging=never";
+      ls = "eza";
+      ll = "eza -la";
+      tree = "eza --tree";
+    } // (if pkgs.stdenv.isDarwin then {} else {
       zed = "zeditor";
       what-file = "lsof -p $(pgrep -d, -f amberol) 2>/dev/null | grep -iE '\\.(mp3|flac|wav|m4a|ogg|opus)$' | awk '{print $NF}' | head -n 1";
     });
@@ -71,6 +70,9 @@
       bind 'set completion-ignore-case on'
       bind 'set show-all-if-ambiguous on'
       bind 'TAB:menu-complete'
+
+      # zoxide (smart cd)
+      eval "$(zoxide init bash)"
 
       # Git branch in prompt
       parse_git_branch() {
@@ -155,19 +157,16 @@
   # ── OpenCode ──────────────────────────────────────────────────────────────
   xdg.configFile."opencode/opencode.jsonc".text = ''
     {
-      "$$schema": "https://opencode.ai/config.json",
+      "$schema": "https://opencode.ai/config.json",
       "mcp": {
-        "context7": {
-          "type": "remote",
-          "url": "https://mcp.context7.com/mcp",
-          "enabled": true,
-          "headers": {
-            "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}"
-          }
-        },
         "playwright": {
           "type": "local",
           "command": ["npx", "@playwright/mcp@latest"],
+          "enabled": true
+        },
+        "nixos": {
+          "type": "local",
+          "command": ["uvx", "mcp-nixos"],
           "enabled": true
         }
       }

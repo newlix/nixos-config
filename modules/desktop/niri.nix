@@ -4,6 +4,12 @@
   # ── Niri (Wayland compositor) ──────────────────────────────────────────────
   programs.niri.enable = true;
 
+  # ── XDG Portals ────────────────────────────────────────────────────────────
+  xdg.portal = {
+    enable = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-gnome ];
+  };
+
   # greetd login manager — auto-launches niri
   services.greetd = {
     enable = true;

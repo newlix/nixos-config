@@ -65,6 +65,10 @@
     jq
     btop
     ncdu
+    bat       # cat with syntax highlighting
+    eza       # modern ls replacement
+    zoxide    # smart cd replacement
+    nix-index # nix-index for command-not-found
   ] ++ lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
     swiftlint
   ] ++ lib.optionals pkgs.stdenv.isLinux (with pkgs; [
@@ -79,9 +83,6 @@
 
     # Browser
     google-chrome
-
-    # Editor
-    sublime4
 
     # File manager
     nautilus
