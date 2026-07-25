@@ -140,7 +140,7 @@
     spawn-at-startup "swaync"
 
     prefer-no-csd
-    screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+    screenshot-path "~/Downloads/Screenshot from %Y-%m-%d %H-%M-%S.png"
 
     // Render compositor on AMD iGPU, keep NVIDIA VRAM free for compute/gaming
     debug {
