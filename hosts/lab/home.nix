@@ -67,7 +67,7 @@
   ];
 
   programs.bash.shellAliases = {
-    open = "nautilus";
+    open = "nautilus .";
   };
 
   programs.mpv = {
@@ -167,7 +167,7 @@
     binds {
         Mod+Shift+Slash { show-hotkey-overlay; }
         Mod+T { spawn "foot"; }
-        Mod+E { spawn "nautilus" "--new-window"; }
+        Mod+E { spawn "nautilus" "--new-window" "/home/newlix/Downloads"; }
         Mod+B { spawn "google-chrome-stable" "--new-window"; }
         Mod+G { spawn "google-chrome-stable" "--app=https://gemini.google.com"; }
         Super+Space { spawn "fuzzel"; }
