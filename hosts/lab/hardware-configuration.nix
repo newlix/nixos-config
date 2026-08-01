@@ -11,7 +11,7 @@
   boot.initrd.availableKernelModules = [
     "nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod"
   ];
-  boot.initrd.kernelModules = [ "amdgpu" ];
+  # boot.initrd.kernelModules = [ "amdgpu" ];  # Disabled: iGPU will be turned off in BIOS
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
 

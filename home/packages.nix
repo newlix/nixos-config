@@ -39,7 +39,6 @@
   home-manager.users.newlix.home.packages = with pkgs; [
     gh
     claude-code
-    opencode
     ctx7
 
     # Go
@@ -55,6 +54,7 @@
     nodejs
     pnpm
     typescript-language-server
+    (import ../packages/bun.nix { inherit pkgs; })
 
     # Backup
     restic
@@ -69,6 +69,7 @@
     eza       # modern ls replacement
     zoxide    # smart cd replacement
     nix-index # nix-index for command-not-found
+    opencode  # AI coding agent
   ] ++ lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
     swiftlint
   ] ++ lib.optionals pkgs.stdenv.isLinux (with pkgs; [
@@ -95,7 +96,6 @@
     gst_all_1.gst-libav
     papirus-icon-theme
 
-    # Image viewer (replaced by imv in lab/home.nix)
 
     # Screenshot
     swappy

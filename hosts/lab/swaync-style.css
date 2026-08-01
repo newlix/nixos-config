@@ -1,0 +1,238 @@
+* {
+  all: unset;
+  font-family: Hack, Symbols Nerd Font, monospace;
+  font-size: 13px;
+}
+
+.control-center {
+  background: rgba(20, 20, 22, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.notification-row {
+  outline: none;
+  margin: 0;
+  padding: 0;
+}
+
+.notification {
+  background: rgba(40, 40, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  margin: 4px 0;
+  padding: 10px;
+  transition: background 0.15s ease;
+}
+
+.notification:hover {
+  background: rgba(50, 50, 52, 0.9);
+}
+
+.notification.default {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.notification.low {
+  border-color: rgba(150, 203, 254, 0.3);
+}
+
+.notification.critical {
+  border-color: rgba(255, 108, 96, 0.5);
+}
+
+.notification-content {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.summary {
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 13px;
+}
+
+.time {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 11px;
+}
+
+.body {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.image {
+  border-radius: 8px;
+}
+
+.notification-default-action {
+  margin: 0;
+  padding: 0;
+  border-radius: 10px;
+}
+
+.close-button {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 2px;
+  padding: 2px 6px;
+}
+
+.close-button:hover {
+  background: rgba(255, 108, 96, 0.3);
+  color: #ff6c60;
+}
+
+.notification-actions {
+  margin-top: 6px;
+}
+
+.notification-action {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.8);
+  padding: 4px 8px;
+}
+
+.notification-action:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.control-center-list {
+  background: transparent;
+}
+
+.control-center-list-placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.blank-window {
+  background: transparent;
+}
+
+.dnd {
+  background: rgba(40, 40, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  margin: 4px 0;
+  padding: 8px 12px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.dnd > * {
+  margin: 0 4px;
+}
+
+.dnd slider {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.widget-title {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 15px;
+  font-weight: bold;
+  margin: 4px 0;
+  padding: 0 4px;
+}
+
+.widget-title button {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 2px 8px;
+}
+
+.widget-title button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.widget-label {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  margin: 4px 0;
+}
+
+.widget-mpris {
+  background: rgba(40, 40, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  margin: 4px 0;
+  padding: 10px;
+}
+
+.widget-mpris-player {
+  padding: 4px 0;
+}
+
+.widget-mpris-title {
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.widget-mpris-subtitle {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.widget-volume {
+  background: rgba(40, 40, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  margin: 4px 0;
+  padding: 8px 12px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.widget-volume trough {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  min-height: 6px;
+}
+
+.widget-volume highlight {
+  background: rgba(150, 203, 254, 0.8);
+  border-radius: 4px;
+}
+
+.widget-backlight {
+  background: rgba(40, 40, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  margin: 4px 0;
+  padding: 8px 12px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.widget-backlight trough {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  min-height: 6px;
+}
+
+.widget-backlight highlight {
+  background: rgba(255, 203, 107, 0.8);
+  border-radius: 4px;
+}
+
+.buttons-grid {
+  margin: 4px 0;
+}
+
+.buttons-grid button {
+  background: rgba(40, 40, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 8px 12px;
+  min-width: 40px;
+}
+
+.buttons-grid button:hover {
+  background: rgba(50, 50, 52, 0.9);
+}

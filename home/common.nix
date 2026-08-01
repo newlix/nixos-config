@@ -55,6 +55,7 @@
       yt-dlp-video = "yt-dlp -S ext:mp4:m4a --cookies-from-browser chrome";
       cl = "npx @anthropic-ai/claude-code@latest --dangerously-skip-permissions --rc";
       gemini = "npx @google/gemini-cli -y";
+      omp = "bunx @oh-my-pi/pi-coding-agent@latest";
       cat = "bat --paging=never";
       ls = "eza";
       ll = "eza -la";
@@ -155,49 +156,4 @@
     mouse = true;
   };
 
-  # ── OpenCode ──────────────────────────────────────────────────────────────
-  xdg.configFile."opencode/opencode.jsonc".text = ''
-    {
-      "$schema": "https://opencode.ai/config.json",
-      "plugin": ["oh-my-openagent"],
-      "mcp": {
-        "playwright": {
-          "type": "local",
-          "command": ["npx", "@playwright/mcp@latest"],
-          "enabled": true
-        },
-        "nixos": {
-          "type": "local",
-          "command": ["uvx", "mcp-nixos"],
-          "enabled": true
-        }
-      }
-    }
-  '';
-
-   xdg.configFile."opencode/oh-my-openagent.jsonc".text = ''
-    {
-      "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/config.schema.json",
-      "agents": {
-        "sisyphus": { "model": "opencode-go/kimi-k2.6" },
-        "metis": { "model": "opencode-go/glm-5.2" },
-        "prometheus": { "model": "opencode-go/glm-5.2" },
-        "atlas": { "model": "opencode-go/kimi-k2.6" },
-        "oracle": { "model": "opencode-go/glm-5.2" },
-        "momus": { "model": "opencode-go/glm-5.2" },
-        "hephaestus": { "model": "opencode-go/glm-5.2" },
-        "librarian": { "model": "opencode/big-pickle" },
-        "explore": { "model": "opencode-go/minimax-m2.7" },
-        "multimodal-looker": { "model": "opencode-go/glm-5.2" },
-        "sisyphus-junior": { "model": "opencode-go/kimi-k2.6" }
-      }
-    }
-  '';
-
-  xdg.configFile."opencode/tui.json".text = ''
-    {
-      "$schema": "https://opencode.ai/tui.json",
-      "plugin": ["oh-my-openagent"]
-    }
-  '';
 }

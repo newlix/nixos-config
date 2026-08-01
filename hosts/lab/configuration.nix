@@ -15,7 +15,7 @@
   # Keep last 5 NixOS generations in the boot menu
   boot.loader.systemd-boot.configurationLimit = 5;
 
-  boot.kernelPackages = pkgs.linuxPackages; # LTS — avoids NVIDIA driver build failures on kernel bumps
+  boot.kernelPackages = pkgs.linuxPackages; # latest stable (not LTS — see pkgs.linuxPackages_lts)
 
   # Shutdown watchdog — forces reboot after 5 min if shutdown hangs (e.g. FUSE unmount).
   systemd.settings.Manager.ShutdownWatchdogSec = "5min";
@@ -55,7 +55,6 @@
   hardware.graphics.enable = true;
 
   nixpkgs.config.allowUnfree = true;
-  nixpkgs.config.permittedInsecurePackages = [ "openssl-1.1.1w" ];
 
   # NVIDIA RTX 5070 Ti (GB203/Blackwell)
   services.xserver.videoDrivers = [ "nvidia" ];
@@ -120,7 +119,6 @@
   nix = {
     settings = {
       experimental-features = [ "nix-command" "flakes" ];
-      auto-optimise-store = true;
       # Automatic GC when disk space is low
       min-free = 5 * 1024 * 1024 * 1024; # 5GB
       max-free = 20 * 1024 * 1024 * 1024; # 20GB
