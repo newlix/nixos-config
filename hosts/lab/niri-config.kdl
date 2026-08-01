@@ -90,6 +90,7 @@ binds {
 
     Mod+O { toggle-overview; }
 
+    Ctrl+Q { close-window; }
     Mod+Left  { focus-column-left; }
 
     Mod+Down  { focus-window-down; }
