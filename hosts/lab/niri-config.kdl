@@ -73,7 +73,6 @@ binds {
     Mod+B { spawn "google-chrome-stable" "--new-window"; }
     Mod+G { spawn "google-chrome-stable" "--app=https://gemini.google.com"; }
     Super+Space { spawn "fuzzel"; }
-    Mod+N { spawn "swaync-client" "-t" "-sw"; }
     Ctrl+Mod+Q { spawn "wlogout" "-b" "4" "-T" "480" "-B" "480" "-L" "300" "-R" "300"; }
 
     XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+ -l 1.0"; }
@@ -90,7 +89,6 @@ binds {
     XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "10%-"; }
 
     Mod+O { toggle-overview; }
-    Ctrl+Q { close-window; }
 
     Mod+Left  { focus-column-left; }
 
