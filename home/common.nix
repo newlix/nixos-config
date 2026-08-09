@@ -55,7 +55,8 @@
       grep = "grep --color=auto";
       yt-dlp-audio = "yt-dlp -f 'bestaudio' -x --audio-format mp3 --cookies-from-browser chrome";
       yt-dlp-video = "yt-dlp -S ext:mp4:m4a --cookies-from-browser chrome";
-      cl = "npx @anthropic-ai/claude-code@latest --dangerously-skip-permissions --rc";
+      cl = "claude";
+      cl-ds = "claude-ds";
       gemini = "npx @google/gemini-cli -y";
       omp = "bunx @oh-my-pi/pi-coding-agent";
       cat = "bat --paging=never";
@@ -68,6 +69,34 @@
     });
 
     initExtra = ''
+
+      # ── Claude Code: switch between Anthropic & DeepSeek ──────────────────
+      # claude         → Anthropic (needs ANTHROPIC_API_KEY)
+      # claude-ds      → DeepSeek V4 Pro  (needs DEEPSEEK_API_KEY)
+      # claude-which   → show current backend
+      __claude_anthropic() {
+        unset ANTHROPIC_BASE_URL
+        export ANTHROPIC_AUTH_TOKEN="$ANTHROPIC_API_KEY"
+        export ANTHROPIC_MODEL="claude-sonnet-4-20250514"
+        unset ANTHROPIC_DEFAULT_OPUS_MODEL ANTHROPIC_DEFAULT_SONNET_MODEL ANTHROPIC_DEFAULT_HAIKU_MODEL
+        export CLAUDE_CODE_SUBAGENT_MODEL="claude-sonnet-4-20250514"
+        echo "Claude Code → Anthropic (claude-sonnet-4)"
+      }
+      __claude_deepseek() {
+        export ANTHROPIC_BASE_URL="https://api.deepseek.com/anthropic"
+        export ANTHROPIC_AUTH_TOKEN="$DEEPSEEK_API_KEY"
+        export ANTHROPIC_MODEL="deepseek-v4-pro[1m]"
+        export ANTHROPIC_DEFAULT_OPUS_MODEL="deepseek-v4-pro[1m]"
+        export ANTHROPIC_DEFAULT_SONNET_MODEL="deepseek-v4-pro[1m]"
+        export ANTHROPIC_DEFAULT_HAIKU_MODEL="deepseek-v4-flash"
+        export CLAUDE_CODE_SUBAGENT_MODEL="deepseek-v4-flash"
+        echo "Claude Code → DeepSeek V4 Pro"
+      }
+      # Default: Anthropic
+      __claude_anthropic
+      alias claude='__claude_anthropic; \claude'
+      alias claude-ds='__claude_deepseek; \claude'
+      claude-which() { echo "Claude Code: ANTHROPIC_BASE_URL=$ANTHROPIC_BASE_URL  ANTHROPIC_MODEL=$ANTHROPIC_MODEL"; }
       source ~/dotfiles/profile.local 2>/dev/null || true
 
       shopt -s checkwinsize globstar histappend
