@@ -46,6 +46,8 @@
       MANPAGER = "less -X";
       LANG     = "en_US.UTF-8";
       LC_ALL   = "en_US.UTF-8";
+      ANDROID_HOME = "$HOME/Android/Sdk";
+      ANDROID_SDK_ROOT = "$HOME/Android/Sdk";
       HISTTIMEFORMAT = "%F %T  ";
     };
 
@@ -55,7 +57,7 @@
       yt-dlp-video = "yt-dlp -S ext:mp4:m4a --cookies-from-browser chrome";
       cl = "npx @anthropic-ai/claude-code@latest --dangerously-skip-permissions --rc";
       gemini = "npx @google/gemini-cli -y";
-      omp = "bunx @oh-my-pi/pi-coding-agent@latest";
+      omp = "bunx @oh-my-pi/pi-coding-agent";
       cat = "bat --paging=never";
       ls = "eza";
       ll = "eza -la";

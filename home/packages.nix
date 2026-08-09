@@ -20,6 +20,14 @@
     bash-completion
     s3cmd
     zola
+    antigravity     # Google agentic IDE
+    wrangler       # Cloudflare Workers CLI
+    # Android / Jetpack Compose
+    android-studio-full
+    android-tools
+    jdk17
+    kotlin
+    gradle
 
     # Nix tooling
     nixd           # LSP for Nix
@@ -41,6 +49,9 @@
     claude-code
     ctx7
 
+    # LSPs
+    sqls
+    taplo
     # Go
     gopls
     golangci-lint
@@ -48,6 +59,7 @@
     sqlc
 
     # Python
+    python3
     uv
 
     # Node.js

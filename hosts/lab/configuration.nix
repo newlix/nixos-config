@@ -55,6 +55,7 @@
   hardware.graphics.enable = true;
 
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.android_sdk.accept_license = true;
 
   # NVIDIA RTX 5070 Ti (GB203/Blackwell)
   services.xserver.videoDrivers = [ "nvidia" ];

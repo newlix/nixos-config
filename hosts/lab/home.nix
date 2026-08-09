@@ -94,6 +94,18 @@
     };
   };
 
+
+  # ── Helix LSP config ──────────────────────────────────────────────────────
+  # sqls isn't mapped by default; add it here.
+  xdg.configFile."helix/languages.toml".text = ''
+    [[language]]
+    name = "sql"
+    language-servers = ["sqls"]
+
+    [language-server.sqls]
+    command = "${pkgs.sqls}/bin/sqls"
+    args = ["-log", "/tmp/sqls.log"]
+  '';
   # ── Niri Configuration (KDL) ──────────────────────────────────────────────
   xdg.configFile."niri/config.kdl".source = ./niri-config.kdl;
 
