@@ -96,7 +96,6 @@
       __claude_anthropic
       alias claude='__claude_anthropic; \claude'
       alias claude-ds='__claude_deepseek; \claude'
-      claude-which() { echo "Claude Code: ANTHROPIC_BASE_URL=$ANTHROPIC_BASE_URL  ANTHROPIC_MODEL=$ANTHROPIC_MODEL"; }
       source ~/dotfiles/profile.local 2>/dev/null || true
 
       shopt -s checkwinsize globstar histappend
