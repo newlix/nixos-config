@@ -16,7 +16,7 @@
 
     # Dev
     gcc
-    gnumake
+    sqlite            # interactive SQLite CLI
     bash-completion
     s3cmd
     zola
@@ -54,7 +54,8 @@
     taplo
     # Go
     gopls
-    golangci-lint
+    delve              # Go debugger (OMP + Helix)
+    golangci-lint-langserver  # Go lint LSP (Helix)
     go-tools # staticcheck
     sqlc
 
@@ -66,7 +67,7 @@
     nodejs
     pnpm
     typescript-language-server
-    (import ../packages/bun.nix { inherit pkgs; })
+    vscode-js-debug   # JS/TS debug adapter (OMP)
 
     # Backup
     restic
