@@ -56,7 +56,7 @@
       yt-dlp-audio = "yt-dlp -f 'bestaudio' -x --audio-format mp3 --cookies-from-browser chrome";
       yt-dlp-video = "yt-dlp -S ext:mp4:m4a --cookies-from-browser chrome";
       cl = "claude";
-      cl-ds = "claude-ds";
+      cl-claude = "claude-anthropic";
       gemini = "npx @google/gemini-cli -y";
       omp = "bunx @oh-my-pi/pi-coding-agent";
       cat = "bat --paging=never";
@@ -70,10 +70,9 @@
 
     initExtra = ''
 
-      # ── Claude Code: switch between Anthropic & DeepSeek ──────────────────
-      # claude         → Anthropic (needs ANTHROPIC_API_KEY)
-      # claude-ds      → DeepSeek V4 Pro  (needs DEEPSEEK_API_KEY)
-      # claude-which   → show current backend
+      # ── Claude Code: quick-switch between DeepSeek & Anthropic ─────────────
+      # cl             → DeepSeek V4 Pro  (needs DEEPSEEK_API_KEY)
+      # cl-claude      → Anthropic Sonnet  (needs ANTHROPIC_API_KEY)
       __claude_anthropic() {
         unset ANTHROPIC_BASE_URL
         export ANTHROPIC_AUTH_TOKEN="$ANTHROPIC_API_KEY"
@@ -92,10 +91,10 @@
         export CLAUDE_CODE_SUBAGENT_MODEL="deepseek-v4-flash"
         echo "Claude Code → DeepSeek V4 Pro"
       }
-      # Default: Anthropic
-      __claude_anthropic
-      alias claude='__claude_anthropic; \claude'
-      alias claude-ds='__claude_deepseek; \claude'
+      # Default: DeepSeek
+      __claude_deepseek
+      alias claude='__claude_deepseek; \claude'
+      alias claude-anthropic='__claude_anthropic; \claude'
       source ~/dotfiles/profile.local 2>/dev/null || true
 
       shopt -s checkwinsize globstar histappend
