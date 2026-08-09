@@ -16,6 +16,7 @@
 
     # Dev
     gcc
+    sqlite            # interactive SQLite CLI
     shellcheck         # Shell script linter
     typos              # Code spell checker
     # JS/TS linting (OMP BiomeClient)
