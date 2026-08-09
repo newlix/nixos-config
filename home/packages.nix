@@ -16,7 +16,13 @@
 
     # Dev
     gcc
-    sqlite            # interactive SQLite CLI
+    shellcheck         # Shell script linter
+    typos              # Code spell checker
+    # JS/TS linting (OMP BiomeClient)
+    biome              # Fast linter + formatter
+    # Nix linting
+    statix             # Nix anti-pattern linter
+    deadnix            # Unused Nix code scanner
     bash-completion
     s3cmd
     zola
@@ -52,9 +58,10 @@
     # LSPs
     sqls
     taplo
+    kotlin-language-server
+    lemminx           # XML LSP (AndroidManifest, layouts, etc.)
     # Go
     gopls
-    delve              # Go debugger (OMP + Helix)
     golangci-lint-langserver  # Go lint LSP (Helix)
     go-tools # staticcheck
     sqlc
@@ -86,6 +93,8 @@
   ] ++ lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
     swiftlint
   ] ++ lib.optionals pkgs.stdenv.isLinux (with pkgs; [
+    ktfmt
+    scrcpy
     bc
 
     # Niri ecosystem
