@@ -27,7 +27,7 @@
     bash-completion
     s3cmd
     zola
-    antigravity     # Google agentic IDE
+    antigravity-ide     # Google agentic IDE
     wrangler       # Cloudflare Workers CLI
     # Android / Jetpack Compose
     android-studio-full
@@ -136,6 +136,7 @@
     playerctl
 
     # Notes
+    (import ../packages/bun.nix { inherit pkgs; })
     (import ../packages/scratch.nix { inherit pkgs; })
     (import ../packages/azaharplus.nix { inherit pkgs; })
   ]);
