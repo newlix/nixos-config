@@ -188,4 +188,7 @@
   # ── omp (Oh My Pi coding agent) ───────────────────────────────────────────
   home.file.".omp/agent/config.yml".source = ./omp/config.yml;
 
+  # ── Claude ─────────────────────────────────────────────────────────────────
+  home.file.".claude/CLAUDE.md".source = ./claude/CLAUDE.md;
+
 }
