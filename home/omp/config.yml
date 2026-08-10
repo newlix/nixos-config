@@ -1,0 +1,21 @@
+modelRoles:
+  default: deepseek/deepseek-v4-pro
+  smol: deepseek/deepseek-v4-flash
+  slow: deepseek/deepseek-v4-pro:high
+  vision: google-antigravity/gemini-3.6-flash
+  plan: deepseek/deepseek-v4-pro:high
+  designer: deepseek/deepseek-v4-pro:high
+  commit: deepseek/deepseek-v4-flash
+
+modelRoleStorage: project
+
+symbolPreset: unicode
+theme:
+  dark: dark-tokyo-night
+setupVersion: 1
+memory:
+  backend: mnemopi
+defaultThinkingLevel: auto
+hideThinkingBlock: false
+edit:
+  mode: replace
