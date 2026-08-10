@@ -58,22 +58,17 @@
 
     taps = [
       "peripheryapp/periphery"
-      "cockroachdb/tap"
     ];
 
     brews = [
       "periphery"
-      "cockroach"
+      "bun"
     ];
 
     casks = [
       "android-studio"
-      "antigravity"
       "appcleaner"
       "arq"
-      "balenaetcher"
-      "flashspace"
-      "ghostty"
       "google-chrome"
       "iina"
       "kobo"
@@ -85,9 +80,7 @@
       "telegram"
       "transmit"
       "utm"
-      "vnc-viewer"
       "zed"
-
     ];
   };
 

@@ -29,6 +29,11 @@
     zola
     antigravity-ide     # Google agentic IDE
     wrangler       # Cloudflare Workers CLI
+
+    # Nix tooling
+    nixd           # LSP for Nix
+    alejandra      # Nix formatter
+  ] ++ lib.optionals pkgs.stdenv.isLinux [
     # Android / Jetpack Compose
     android-studio-full
     android-tools
@@ -36,10 +41,6 @@
     kotlin
     gradle
 
-    # Nix tooling
-    nixd           # LSP for Nix
-    alejandra      # Nix formatter
-  ] ++ lib.optionals pkgs.stdenv.isLinux [
     libfaketime
     scanmem        # memory scanner (like Cheat Engine)
     file lsof
