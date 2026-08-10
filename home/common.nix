@@ -185,4 +185,7 @@
     mouse = true;
   };
 
+  # ── omp (Oh My Pi coding agent) ───────────────────────────────────────────
+  home.file.".omp/agent/config.yml".source = ./omp/config.yml;
+
 }
