@@ -187,6 +187,7 @@
 
   # ── omp (Oh My Pi coding agent) ───────────────────────────────────────────
   home.file.".omp/agent/config.yml".source = ./omp/config.yml;
+  home.file.".omp/agent/themes/ir-black.json".source = ./omp/themes/ir-black.json;
 
   # ── Claude ─────────────────────────────────────────────────────────────────
   home.file.".claude/CLAUDE.md".source = ./claude/CLAUDE.md;

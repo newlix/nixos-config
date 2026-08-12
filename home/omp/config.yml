@@ -5,7 +5,7 @@ modelRoleStorage: project
 
 symbolPreset: unicode
 theme:
-  dark: dark-tokyo-night
+  dark: ir-black
 setupVersion: 1
 memory:
   backend: mnemopi
