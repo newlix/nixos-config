@@ -1,5 +1,6 @@
 modelRoles:
-  default: zai/glm-5.2
+  default: zai/glm-5.2:max
+  smol: zai/glm-5-turbo:low
 
 modelRoleStorage: project
 
@@ -9,7 +10,7 @@ theme:
 setupVersion: 1
 memory:
   backend: mnemopi
-defaultThinkingLevel: auto
+defaultThinkingLevel: max
 hideThinkingBlock: false
 edit:
   mode: replace
