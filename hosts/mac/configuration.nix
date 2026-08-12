@@ -63,6 +63,7 @@
     brews = [
       "periphery"
       "bun"
+      "xcode-build-server"
     ];
 
     casks = [
