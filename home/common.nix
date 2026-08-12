@@ -58,7 +58,6 @@
       cl = "claude";
       cl-claude = "claude-anthropic";
       gemini = "npx @google/gemini-cli -y";
-      omp = "bunx @oh-my-pi/pi-coding-agent";
       cat = "bat --paging=never";
       ls = "eza";
       ll = "eza -la";
@@ -69,6 +68,21 @@
     });
 
     initExtra = ''
+
+      # ── omp: 256-color fallback for non-truecolor terminals ───────────────
+      # omp assumes 24-bit truecolor for any TERM that isn't dumb/linux/empty
+      # and emits 38;2;r;g;b escapes. macOS Terminal.app (and other 256-only
+      # terminals) silently drop those → invisible/wrong colors. Force 256-color
+      # detection when truecolor isn't advertised. Skipped inside tmux/screen
+      # (keep their TERM) and when the terminal already advertises truecolor.
+      omp() {
+        if [ -z "''${TMUX:-}''${STY:-}''${ZELLIJ:-}" ] \
+           && [ "$COLORTERM" != "truecolor" ] && [ "$COLORTERM" != "24bit" ]; then
+          TERM=linux command bunx @oh-my-pi/pi-coding-agent "$@"
+        else
+          command bunx @oh-my-pi/pi-coding-agent "$@"
+        fi
+      }
 
       # ── Claude Code: quick-switch between DeepSeek & Anthropic ─────────────
       # cl             → DeepSeek V4 Pro  (needs DEEPSEEK_API_KEY)
