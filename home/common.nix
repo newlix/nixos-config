@@ -55,13 +55,9 @@
       grep = "grep --color=auto";
       yt-dlp-audio = "yt-dlp -f 'bestaudio' -x --audio-format mp3 --cookies-from-browser chrome";
       yt-dlp-video = "yt-dlp -S ext:mp4:m4a --cookies-from-browser chrome";
-      cl = "claude";
-      cl-claude = "claude-anthropic";
+      cl = "npx @anthropic-ai/claude-code@latest --dangerously-skip-permissions";
       gemini = "npx @google/gemini-cli -y";
-      cat = "bat --paging=never";
-      ls = "eza";
-      ll = "eza -la";
-      tree = "eza --tree";
+      ll = "ls -la";
     } // (if pkgs.stdenv.isDarwin then {} else {
       zed = "zeditor";
       what-file = "lsof -p $(pgrep -d, -f amberol) 2>/dev/null | grep -iE '\\.(mp3|flac|wav|m4a|ogg|opus)$' | awk '{print $NF}' | head -n 1";
@@ -84,31 +80,6 @@
         fi
       }
 
-      # ── Claude Code: quick-switch between DeepSeek & Anthropic ─────────────
-      # cl             → DeepSeek V4 Pro  (needs DEEPSEEK_API_KEY)
-      # cl-claude      → Anthropic Sonnet  (needs ANTHROPIC_API_KEY)
-      __claude_anthropic() {
-        unset ANTHROPIC_BASE_URL
-        export ANTHROPIC_AUTH_TOKEN="$ANTHROPIC_API_KEY"
-        export ANTHROPIC_MODEL="claude-sonnet-4-20250514"
-        unset ANTHROPIC_DEFAULT_OPUS_MODEL ANTHROPIC_DEFAULT_SONNET_MODEL ANTHROPIC_DEFAULT_HAIKU_MODEL
-        export CLAUDE_CODE_SUBAGENT_MODEL="claude-sonnet-4-20250514"
-        echo "Claude Code → Anthropic (claude-sonnet-4)"
-      }
-      __claude_deepseek() {
-        export ANTHROPIC_BASE_URL="https://api.deepseek.com/anthropic"
-        export ANTHROPIC_AUTH_TOKEN="$DEEPSEEK_API_KEY"
-        export ANTHROPIC_MODEL="deepseek-v4-pro[1m]"
-        export ANTHROPIC_DEFAULT_OPUS_MODEL="deepseek-v4-pro[1m]"
-        export ANTHROPIC_DEFAULT_SONNET_MODEL="deepseek-v4-pro[1m]"
-        export ANTHROPIC_DEFAULT_HAIKU_MODEL="deepseek-v4-flash"
-        export CLAUDE_CODE_SUBAGENT_MODEL="deepseek-v4-flash"
-        echo "Claude Code → DeepSeek V4 Pro"
-      }
-      # Default: DeepSeek
-      __claude_deepseek
-      alias claude='__claude_deepseek; \claude'
-      alias claude-anthropic='__claude_anthropic; \claude'
       source ~/dotfiles/profile.local 2>/dev/null || true
 
       shopt -s checkwinsize globstar histappend
