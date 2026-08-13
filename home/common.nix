@@ -156,7 +156,7 @@
       }
 
       # PATH extras
-      export PATH="$HOME/core/sh:$HOME/bin:$HOME/go/bin:$PATH"
+      export PATH="$HOME/.local/bin:$HOME/core/sh:$HOME/bin:$HOME/go/bin:$PATH"
 
       # macOS-only
       if [[ "$(uname)" == "Darwin" ]]; then
