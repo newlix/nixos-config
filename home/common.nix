@@ -25,7 +25,7 @@
     settings = {
       user = {
         name  = "newlix";
-        email = "newlix134@gmail.com";
+        email = "91061+newlix@users.noreply.github.com";
       };
       init.defaultBranch = "main";
       credential."https://github.com".helper    = "!gh auth git-credential";
