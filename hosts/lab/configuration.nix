@@ -133,41 +133,10 @@
     optimise.automatic = true; # Weekly nix-store --optimise (dedup hardlinks)
   };
 
-  # ── nix-ld ─────────────────────────────────────────────────────────────────
-  # Provides a dynamic linker stub so non-NixOS binaries (e.g. uv-managed
-  # Python, pre-built ML wheels) can run without patching.
-  programs.nix-ld.enable = true;
-  programs.nix-ld.libraries = with pkgs; [
-    # Chromium / Electron runtime dependencies
-    glib
-    nss
-    nspr
-    atk
-    cups
-    dbus
-    libdrm
-    gtk3
-    pango
-    cairo
-    libx11
-    libxcomposite
-    libxdamage
-    libxext
-    libxfixes
-    libxrandr
-    libxcb
-    mesa
-    libgbm
-    expat
-    alsa-lib
-    at-spi2-atk
-    at-spi2-core
-    libxkbcommon
-    libxcursor
-    libxi
-    libxrender
-    libxtst
-  ];
+  # ── nix-ld (removed) ──────────────────────────────────────────────────────
+  # Disabled 2026-08-14: last consumers (uv/zola prebuilts in ~/.local/bin)
+  # moved to nixpkgs; opencode-bin is autoPatchelf'd. Re-enable here if a
+  # non-NixOS binary is ever needed again.
 
   # ── /usr/bin ─────────────────────────────────────────────────────────────
   # environment.usrbinenv (default: pkgs.coreutils/bin/env) already creates
