@@ -89,10 +89,13 @@
     ncdu
     zoxide    # smart cd replacement
     nix-index # nix-index for command-not-found
-    opencode  # AI coding agent
+    uv        # python manager (was ~/.local/bin nix-ld prebuilt)
   ] ++ lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
     swiftlint
   ] ++ lib.optionals pkgs.stdenv.isLinux (with pkgs; [
+    # opencode pinned ahead of nixpkgs (loop-bug fix); revert to plain
+    # `opencode` in the common list once nixpkgs >= 1.18.18
+    (import ../packages/opencode-bin.nix { inherit pkgs; })
     ktfmt
     scrcpy
     bc
