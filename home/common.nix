@@ -57,6 +57,7 @@
       yt-dlp-video = "yt-dlp -S ext:mp4:m4a --cookies-from-browser chrome";
       cl = "npx @anthropic-ai/claude-code@latest --dangerously-skip-permissions";
       gemini = "npx @google/gemini-cli -y";
+      pi = "npx @earendil-works/pi-coding-agent";
       ll = "ls -la";
     } // (if pkgs.stdenv.isDarwin then {} else {
       zed = "zeditor";
@@ -176,5 +177,11 @@
 
   # ── Claude ─────────────────────────────────────────────────────────────────
   home.file.".claude/CLAUDE.md".source = ./claude/CLAUDE.md;
+
+  # ── OpenCode ──────────────────────────────────────────────────────────────
+  home.file.".config/opencode/opencode.jsonc".source = ./opencode/opencode.jsonc;
+  home.file.".config/opencode/AGENTS.md".source = ./opencode/AGENTS.md;
+  home.file.".config/opencode/agents/fable.md".source = ./opencode/agents/fable.md;
+  home.file.".config/opencode/agents/pi.md".source = ./opencode/agents/pi.md;
 
 }
