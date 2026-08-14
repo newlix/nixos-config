@@ -5,6 +5,7 @@
     ../../home/packages.nix
     ../../modules/services/samba.nix
     ../../modules/services/backup.nix
+    ../../modules/services/ptt-backup.nix
     ../../modules/desktop/niri.nix
     ../../modules/services/keyd.nix
   ];
