@@ -1,0 +1,21 @@
+# This is a generated file.  Do not edit!
+#
+# To make changes, edit the fileSystems and swapDevices NixOS options
+# in your /etc/nixos/configuration.nix file.
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+
+# Filesystems.
+/dev/disk/by-uuid/e3e2a03d-5f1a-4740-9819-3662c0d00827 / xfs x-initrd.mount,noatime 0 1
+/dev/disk/by-uuid/28d67838-6253-49c4-b6ff-7804faf474f5 /115 btrfs subvol=@115,noatime,discard=async 0 0
+/dev/disk/by-uuid/692cb7a6-d375-4ad3-9212-57666e66732d /backup btrfs noatime,compress=zstd,noauto 0 0
+/dev/disk/by-uuid/13B1-77D0 /boot vfat fmask=0077,dmask=0077,umask=0077 0 2
+/dev/disk/by-uuid/28d67838-6253-49c4-b6ff-7804faf474f5 /data btrfs noatime,compress=zstd,discard=async 0 0
+/dev/disk/by-uuid/28d67838-6253-49c4-b6ff-7804faf474f5 /home/newlix btrfs subvol=@newlix,noatime,compress=zstd,discard=async 0 0
+/dev/disk/by-uuid/28d67838-6253-49c4-b6ff-7804faf474f5 /home/newlix/dotfiles btrfs subvol=@dotfiles,noatime,compress=zstd,discard=async 0 0
+/dev/disk/by-uuid/28d67838-6253-49c4-b6ff-7804faf474f5 /home/newlix/github btrfs subvol=@github,noatime,compress=zstd,discard=async 0 0
+
+
+# Swap devices.
+/dev/disk/by-uuid/9b6b038a-ff12-46b2-8447-4f793b4a2c53 none swap defaults
+
