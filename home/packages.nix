@@ -35,7 +35,6 @@
     alejandra      # Nix formatter
   ] ++ lib.optionals pkgs.stdenv.isLinux [
     # Android / Jetpack Compose
-    android-studio-full
     android-tools
     jdk17
     kotlin
